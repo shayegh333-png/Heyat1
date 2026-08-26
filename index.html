@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقه تعاملی هفته وحدت</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+        
+        :root {
+            --primary: #1a5c3a;
+            --secondary: #c9a961;
+            --bg: #f5f0e8;
+            --white: #ffffff;
+            --text: #1a1a1a;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f0e8 0%, #ebe4d6 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .header {
+            position: relative;
+            min-height: 75vh;
+            height: auto;
+            width: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary) 0%, #0d3d26 100%);
+            border-bottom: 5px solid var(--secondary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: zoomInOut 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes zoomInOut {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+
+        .header-vignette {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at center, transparent 40%, rgba(13, 61, 38, 0.5) 100%),
+                linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.4) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .header-overlay {
+            position: relative;
+            z-index: 4;
+            text-align: center;
+            padding: 60px 20px;
+            width: 100%;
+            max-width: 1000px;
+            pointer-events: none;
+        }
+
+        .header-title {
+            color: var(--secondary);
+            font-size: 58px;
+            font-weight: 900;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.7), 0 0 30px rgba(201, 169, 97, 0.3);
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            animation: fadeInDown 1.2s ease;
+            line-height: 1.3;
+        }
+
+        .header-subtitle {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 500;
+            opacity: 0.98;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+            animation: fadeInUp 1.2s ease 0.3s both;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #particlesCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        #header, #registration, #quiz, #result, #siteFooter {
+            position: relative;
+        }
+
+        .stickers-global-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .sticker-element {
+            position: absolute;
+            z-index: 1000;
+            user-select: none;
+            cursor: default;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+            pointer-events: none;
+        }
+
+        .sticker-element.edit-mode {
+            border: 2px dashed var(--secondary);
+            cursor: move;
+            pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+        }
+
+        .sticker-element.edit-mode:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(26, 92, 58, 0.4);
+        }
+
+        .sticker-element img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* ===== انیمیشن‌های استیکر ===== */
+        @keyframes sticker-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+        @keyframes sticker-bounce { 0%,100% { transform: translateY(0); } 30% { transform: translateY(-25px); } 55% { transform: translateY(0); } 75% { transform: translateY(-12px); } }
+        @keyframes sticker-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+        @keyframes sticker-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes sticker-sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+
+        .sticker-handle {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--secondary);
+            border: 2px solid white;
+            border-radius: 50%;
+            display: none;
+            z-index: 1002;
+        }
+
+        .sticker-element.edit-mode .sticker-handle {
+            display: block;
+        }
+
+        .sticker-handle.nw { top: -7px; left: -7px; cursor: nw-resize; }
+        .sticker-handle.ne { top: -7px; right: -7px; cursor: ne-resize; }
+        .sticker-handle.sw { bottom: -7px; left: -7px; cursor: sw-resize; }
+        .sticker-handle.se { bottom: -7px; right: -7px; cursor: se-resize; }
+
+        .container {
+            max-width: 900px;
+            margin: -80px auto 40px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            animation: slideUp 0.6s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: var(--bg);
+            font-family: 'Vazirmatn', Tahoma;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: white;
+            box-shadow: 0 0 0 5px rgba(201, 169, 97, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-group input[type="color"] {
+            padding: 5px;
+            height: 50px;
+            cursor: pointer;
+        }
+
+        .form-group input[type="range"] {
+            padding: 0;
+            background: transparent;
+            border: none;
+            height: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #2d7a4f 100%);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 14px;
+            font-size: 19px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 6px 25px rgba(26, 92, 58, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 35px rgba(26, 92, 58, 0.45);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #d4b978 100%);
+            color: var(--text);
+            box-shadow: 0 6px 25px rgba(201, 169, 97, 0.35);
+        }
+
+        .timer {
+            background: linear-gradient(135deg, var(--primary), #0d3d26);
+            color: var(--secondary);
+            padding: 20px 30px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            border: 3px solid var(--secondary);
+            box-shadow: 0 5px 20px rgba(26, 92, 58, 0.3);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer.warning {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 30px rgba(220, 53, 69, 0.6); }
+        }
+
+        .progress-container {
+            margin-bottom: 35px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #e0e0e0, #f0f0f0);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .question-card {
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--secondary), #d4b978);
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
+        }
+
+        .question-badge::before {
+            content: '📝';
+            margin-left: 8px;
+            font-size: 18px;
+        }
+
+        .question-badge.audio-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .question-badge.audio-badge::before {
+            content: '🎵';
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .difficulty-easy { background: #d4edda; color: #155724; }
+        .difficulty-medium { background: #fff3cd; color: #856404; }
+        .difficulty-hard { background: #f8d7da; color: #721c24; }
+
+        .question-text {
+            font-size: 20px;
+            line-height: 2.2;
+            margin-bottom: 30px;
+            color: var(--text);
+            font-weight: 500;
+            white-space: pre-line;
+            padding: 25px;
+            background: var(--bg);
+            border-radius: 16px;
+            border-right: 5px solid var(--primary);
+        }
+
+        .audio-player-container {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .audio-player-container audio {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .audio-player-container label {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: linear-gradient(135deg, var(--bg), white);
+            padding: 22px 28px;
+            border-radius: 14px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 17px;
+            line-height: 1.8;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--secondary);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .option:hover {
+            transform: translateX(-8px);
+            box-shadow: 0 6px 20px rgba(26, 92, 58, 0.15);
+            border-color: var(--secondary);
+        }
+
+        .option:hover::before {
+            transform: scaleY(1);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, var(--primary), #2d7a4f);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(-8px);
+            box-shadow: 0 6px 25px rgba(26, 92, 58, 0.35);
+        }
+
+        .option.selected::before {
+            transform: scaleY(1);
+            background: var(--secondary);
+        }
+
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            font-size: 17px;
+            font-family: 'Vazirmatn', Tahoma;
+            resize: vertical;
+            min-height: 180px;
+            transition: all 0.3s;
+            background: var(--bg);
+            line-height: 2;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: white;
+            box-shadow: 0 0 0 5px rgba(201, 169, 97, 0.15);
+        }
+
+        .footer {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d3d26 100%);
+            color: white;
+            padding: 22px 20px 18px;
+            margin-top: 60px;
+            position: relative;
+            border-top: 4px solid var(--secondary);
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 8% 50%, rgba(201, 169, 97, 0.18) 0%, transparent 40%),
+                        radial-gradient(circle at 92% 50%, rgba(201, 169, 97, 0.18) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-logo-draggable {
+            position: relative;
+            width: 100%;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .footer-logo-wrapper {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .footer-logo-wrapper.edit-mode {
+            pointer-events: auto;
+            cursor: move;
+            border: 2px dashed var(--secondary);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(201, 169, 97, 0.4);
+        }
+
+        .footer-bottom {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(201, 169, 97, 0.12);
+            border: 1px solid rgba(201, 169, 97, 0.45);
+            border-radius: 30px;
+            padding: 8px 24px;
+            margin-bottom: 14px;
+        }
+
+        .footer-star {
+            color: var(--secondary);
+            font-size: 12px;
+        }
+
+        .footer-copyright {
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
+            font-weight: 500;
+        }
+
+        .footer-rights {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(201, 169, 97, 0.25);
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.9;
+            font-weight: 500;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 92, 58, 0.95);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+            z-index: 9999;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .admin-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--primary);
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 40px rgba(0,0,0,0.2);
+            z-index: 10000;
+            padding: 35px;
+            overflow-y: auto;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .admin-panel.active {
+            right: 0;
+        }
+
+        .admin-section {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid var(--bg);
+        }
+
+        .admin-section h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-section h3::before {
+            content: '';
+            width: 5px;
+            height: 25px;
+            background: var(--secondary);
+            margin-left: 12px;
+            border-radius: 3px;
+        }
+
+        .sticker-controls {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .sticker-url-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .sticker-list {
+            margin-top: 15px;
+        }
+
+        .sticker-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sticker-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .sticker-item.selected {
+            border: 2px solid var(--secondary);
+            background: var(--bg);
+        }
+
+        .sticker-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        .sticker-item button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .sticker-edit-panel {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .sticker-edit-panel h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .sticker-size-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .sticker-size-row label {
+            display: block;
+            font-size: 12px;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .sticker-size-row input, .sticker-size-row select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            font-family: 'Vazirmatn', Tahoma;
+        }
+
+        .device-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 6px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .device-tab {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Vazirmatn', Tahoma;
+            font-size: 14px;
+            transition: all 0.3s;
+            color: var(--text);
+        }
+
+        .device-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        .desktop-settings-box {
+            background: linear-gradient(135deg, #f0f4f1, #e8ede9);
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .desktop-settings-box h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 12px;
+            line-height: 1.8;
+        }
+
+        .smart-note {
+            background: #d1ecf1;
+            border: 1px solid #17a2b8;
+            color: #0c5460;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 12px;
+            line-height: 1.8;
+        }
+
+        .particles-settings {
+            background: linear-gradient(135deg, #0d3d26, #1a5c3a);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            margin-top: 15px;
+        }
+
+        .particles-settings h4 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .particles-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .particles-row label {
+            display: block;
+            font-size: 12px;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .particles-row input, .particles-row select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid rgba(201, 169, 97, 0.4);
+            border-radius: 6px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-family: 'Vazirmatn', Tahoma;
+        }
+
+        .particles-row input[type="color"] {
+            padding: 3px;
+            height: 40px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .particles-row input[type="range"] {
+            padding: 0;
+            background: transparent;
+            border: none;
+            accent-color: var(--secondary);
+        }
+
+        .particles-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(201, 169, 97, 0.15);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(201, 169, 97, 0.3);
+        }
+
+        .particles-toggle span {
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.2);
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--secondary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .range-value {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        .hidden { display: none !important; }
+
+        .result-container {
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        .result-icon {
+            font-size: 100px;
+            margin-bottom: 25px;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .result-score {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 88px;
+            font-weight: 900;
+            padding: 40px;
+            border-radius: 24px;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(26, 92, 58, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.6s ease 0.3s both;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result-score::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-label {
+            font-size: 22px;
+            color: var(--text);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, #f8f5ee, #ffffff);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid rgba(201, 169, 97, 0.25);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-title::before {
+            content: '📊 ';
+        }
+
+        .chart-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .chart-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-bar-label {
+            min-width: 110px;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text);
+            text-align: right;
+        }
+
+        .chart-bar-wrapper {
+            flex: 1;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            border-radius: 16px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 12px;
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+
+        .chart-bar-fill.correct { background: linear-gradient(90deg, #28a745, #5cb85c); }
+        .chart-bar-fill.wrong { background: linear-gradient(90deg, #dc3545, #e74c3c); }
+        .chart-bar-fill.unanswered { background: linear-gradient(90deg, #6c757d, #95a5a6); }
+
+        .chart-bar-value {
+            position: relative;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-color.correct { background: linear-gradient(135deg, #28a745, #5cb85c); }
+        .legend-color.wrong { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+        .legend-color.unanswered { background: linear-gradient(135deg, #6c757d, #95a5a6); }
+
+        .success-msg {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            padding: 25px;
+            border-radius: 14px;
+            margin: 25px 0;
+            font-weight: 600;
+            border: 2px solid #28a745;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @media (max-width: 768px) {
+            .header { min-height: 60vh; }
+            .header-title { font-size: 36px; }
+            .header-subtitle { font-size: 18px; }
+            .container { margin-top: -50px; padding: 0 15px; }
+            .card { padding: 30px 25px; }
+            .admin-panel { width: 100%; right: -100%; }
+            .question-text { font-size: 17px; padding: 18px; }
+            .option { padding: 18px 22px; font-size: 16px; }
+            .timer { font-size: 26px; padding: 16px 24px; }
+            .result-score { font-size: 64px; padding: 30px; }
+            .sticker-size-row { grid-template-columns: 1fr; }
+            .particles-row { grid-template-columns: 1fr; }
+            .footer-rights { font-size: 12px; }
+            .chart-bar-label { min-width: 90px; font-size: 12px; }
+            .chart-bar-fill { font-size: 12px; padding: 0 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="header" style="min-height: 115vh;">
+        <img src="https://uploadkon.ir/uploads/da5825_26Designing-in-16-by-9-202608251442.jpeg" alt="Header" class="header-image" id="headerImage">
+        <div class="header-vignette"></div>
+        <canvas id="particlesCanvas" width="1521" height="527"></canvas>
+        <div class="header-overlay">
+            <h1 class="header-title" id="siteTitle"></h1>
+            <p class="header-subtitle" id="siteSubtitle"></p>
+        </div>
+    </div>
+
+    <div class="admin-toggle" onclick="toggleAdminPanel()" title="پنل مدیریت">⚙️</div>
+
+    <div class="container">
+        <div id="registration" class="card">
+            <h2 style="text-align: center; color: var(--primary); margin-bottom: 15px; font-size: 32px; font-weight: 800;">📋 ثبت‌نام در مسابقه</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 40px; font-size: 16px;">لطفاً اطلاعات خود را با دقت وارد نمایید</p>
+            
+            <div class="form-group">
+                <label>👤 نام:</label>
+                <input type="text" id="firstName" placeholder="نام خود را وارد کنید" required="">
+            </div>
+            <div class="form-group">
+                <label>👥 نام خانوادگی:</label>
+                <input type="text" id="lastName" placeholder="نام خانوادگی خود را وارد کنید" required="">
+            </div>
+            <div class="form-group">
+                <label>🎓 شماره دانشجویی:</label>
+                <input type="text" id="studentId" placeholder="شماره دانشجویی" required="">
+            </div>
+            <div class="form-group">
+                <label>🆔 کد ملی (۱۰ رقم):</label>
+                <input type="text" id="nationalId" maxlength="10" placeholder="مثال: ۱۲۳۴۵۶۷۸۹۰" required="">
+            </div>
+            <button class="btn" onclick="startQuiz()">🚀 شروع مسابقه</button>
+        </div>
+
+        <div id="quiz" class="card hidden">
+            <div class="timer" id="timer">⏳ 11:03</div>
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="progressText">سوال 6 از 49</span>
+                    <span id="progressPercent">10٪</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 10.2041%;"></div>
+                </div>
+            </div>
+            <div id="questionsContainer"><div class="question-card"><div class="question-badge">سوال 6 <span class="difficulty-badge difficulty-easy">آسان (1 امتیاز)</span></div><div class="question-text">🌅 سوال ۶
+
+پدر پیامبر (ص) چه زمانی از دنیا رفت؟</div><div class="options"><div class="option" onclick="selectOption('A')">۱) در ۲ سالگی پیامبر</div><div class="option" onclick="selectOption('B')">۲) در ۶ سالگی پیامبر</div><div class="option" onclick="selectOption('C')">۳) قبل از تولد ایشان</div><div class="option" onclick="selectOption('D')">۴) در ۸ سالگی پیامبر</div></div>
+            <button class="btn" id="confirmBtn" onclick="confirmAnswer()" style="margin-top: 25px;">✅ تایید پاسخ</button>
+            <button class="btn hidden" id="nextBtn" onclick="nextQuestion()" style="margin-top: 25px;">سوال بعد ←</button></div></div>
+        </div>
+
+        <div id="result" class="card hidden">
+            <div class="result-container">
+                <div class="result-icon">🏆</div>
+                <h2 style="color: var(--primary); font-size: 36px; margin-bottom: 20px; font-weight: 800;">مسابقه به پایان رسید!</h2>
+                <div class="result-score" id="finalScore">0</div>
+                <p class="result-label" id="resultLabel">امتیاز شما از ۱۰۰</p>
+                
+                <div class="chart-container">
+                    <div class="chart-title">عملکرد شما در این آزمون</div>
+                    <div class="chart-bars">
+                        <div class="chart-bar-row">
+                            <div class="chart-bar-label">✅ پاسخ‌های درست</div>
+                            <div class="chart-bar-wrapper">
+                                <div class="chart-bar-fill correct" id="correctBar" style="width: 0%;">
+                                    <span class="chart-bar-value" id="correctValue">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-bar-row">
+                            <div class="chart-bar-label">❌ پاسخ‌های غلط</div>
+                            <div class="chart-bar-wrapper">
+                                <div class="chart-bar-fill wrong" id="wrongBar" style="width: 0%;">
+                                    <span class="chart-bar-value" id="wrongValue">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-bar-row">
+                            <div class="chart-bar-label">⚪ بدون پاسخ</div>
+                            <div class="chart-bar-wrapper">
+                                <div class="chart-bar-fill unanswered" id="unansweredBar" style="width: 0%;">
+                                    <span class="chart-bar-value" id="unansweredValue">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><div class="legend-color correct"></div>درست</div>
+                        <div class="legend-item"><div class="legend-color wrong"></div>غلط</div>
+                        <div class="legend-item"><div class="legend-color unanswered"></div>بدون پاسخ</div>
+                    </div>
+                </div>
+
+                <div id="statusBox"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" id="siteFooter">
+        <div class="footer-content">
+            <div class="footer-logo-draggable" id="footerLogoDraggable">
+                <div class="footer-logo-wrapper" id="footerLogoWrapper" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                    <img id="footerLogoImg" src="https://uploadkon.ir/uploads/ac5b25_26Negar-1772332168181.png" style="height: 300px; display: none;" alt="Logo" onerror="this.style.display='none'">
+                </div>
+            </div>
+            <div id="footerElementContainer" style="position: relative; width: 100%; min-height: 30px;"><div id="footerElementDiv" style="position: absolute; left: 50%; top: -151.6%; transform: translate(-50%, -50%); width: 150px; height: 150px; pointer-events: none;"><img src="https://uploadkon.ir/uploads/ac5b25_26Negar-1772332168181.png" style="width:100%; height:100%; object-fit:contain; pointer-events:none;"></div></div>
+            <div class="footer-bottom">
+                <span class="footer-star">✦</span>
+                <span class="footer-copyright">تمامی حقوق محفوظ است</span>
+                <span class="footer-star">✦</span>
+            </div>
+            <div class="footer-rights">
+                کلیه حقوق متعلق به هیئت حضرت علی‌اکبر (ع) دانشگاه علوم پزشکی شهید صدوقی یزد می‌باشد.
+            </div>
+        </div>
+    </footer>
+
+    <div class="stickers-global-overlay" id="stickersGlobalOverlay"></div>
+
+    <div class="admin-panel" id="adminPanel">
+        <h2 style="color: var(--primary); margin-bottom: 35px; text-align: center; font-size: 28px; font-weight: 800;">⚙️ پنل مدیریت</h2>
+        
+        <div id="adminLogin" class="">
+            <div class="form-group">
+                <label>🔐 رمز عبور:</label>
+                <input type="password" id="adminPassword" placeholder="رمز را وارد کنید">
+            </div>
+            <button class="btn" onclick="checkAdminPassword()">ورود به پنل</button>
+        </div>
+
+        <div id="adminContent" class="hidden">
+            <div class="admin-section">
+                <h3>📝 تنظیمات عمومی</h3>
+                <div class="form-group">
+                    <label>عنوان سایت:</label>
+                    <input type="text" id="adminSiteTitle" onchange="updateSiteTitle()">
+                </div>
+                <div class="form-group">
+                    <label>زیرعنوان:</label>
+                    <input type="text" id="adminSiteSubtitle" onchange="updateSiteSubtitle()">
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>🖼️ تصویر هدر (جداگانه)</h3>
+                <div class="form-group">
+                    <label>📱 لینک تصویر هدر (موبایل):</label>
+                    <input type="url" id="headerImageMobileUrl" placeholder="https://example.com/mobile.jpg" style="direction: ltr; text-align: left;">
+                </div>
+                <div class="form-group">
+                    <label>💻 لینک تصویر هدر (دسکتاپ):</label>
+                    <input type="url" id="headerImageDesktopUrl" placeholder="https://example.com/desktop.jpg" style="direction: ltr; text-align: left;">
+                </div>
+                <button class="btn" onclick="updateHeaderImage()">🔄 اعمال تصویر هدر</button>
+                <div class="smart-note">
+                    💡 تصویر مناسب بر اساس اندازه صفحه به‌صورت خودکار انتخاب می‌شود.
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>💻 تنظیمات دسکتاپ/لپ‌تاپ</h3>
+                <div class="desktop-settings-box">
+                    <h4>🖥️ ارتفاع و چیدمان دسکتاپ</h4>
+                    <div class="form-group">
+                        <label>ارتفاع هدر در دسکتاپ (٪ ارتفاع صفحه): <span class="range-value" id="headerHeightValue">115</span></label>
+                        <input type="range" id="headerHeightDesktop" min="30" max="130" value="75" oninput="document.getElementById('headerHeightValue').textContent=this.value; updateHeaderHeightDesktop()">
+                    </div>
+                    <div class="smart-note">
+                        💡 این ارتفاع <strong>فقط در دسکتاپ و لپ‌تاپ</strong> اعمال می‌شود.<br>
+                        📱 در موبایل، ارتفاع خودکار از تنظیمات موبایل استفاده می‌شود.
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>✨ غبارهای نورانی (هدر)</h3>
+                <div class="particles-toggle">
+                    <span>فعال‌سازی ذرات</span>
+                    <label class="switch">
+                        <input type="checkbox" id="particlesEnabled" checked="" onchange="updateParticles()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="particles-settings">
+                    <h4>⚙️ تنظیمات ظاهری</h4>
+                    <div class="particles-row">
+                        <div>
+                            <label>🎨 رنگ ذرات:</label>
+                            <input type="color" id="particlesColor" value="#c9a961" onchange="updateParticles()">
+                        </div>
+                        <div>
+                            <label>🔢 تعداد: <span class="range-value" id="countValue">80</span></label>
+                            <input type="range" id="particlesCount" min="10" max="250" value="80" oninput="document.getElementById('countValue').textContent=this.value; updateParticles()">
+                        </div>
+                    </div>
+                    <div class="particles-row">
+                        <div>
+                            <label>🏃 سرعت سقوط: <span class="range-value" id="speedValue">1.0</span></label>
+                            <input type="range" id="particlesSpeed" min="1" max="40" value="10" oninput="document.getElementById('speedValue').textContent=(this.value/10).toFixed(1); updateParticles()">
+                        </div>
+                        <div>
+                            <label>📏 اندازه: <span class="range-value" id="sizeValue">3.0</span></label>
+                            <input type="range" id="particlesSize" min="5" max="80" value="30" oninput="document.getElementById('sizeValue').textContent=(this.value/10).toFixed(1); updateParticles()">
+                        </div>
+                    </div>
+                    <div class="particles-row">
+                        <div>
+                            <label>💫 شدت درخشش: <span class="range-value" id="glowValue">15</span></label>
+                            <input type="range" id="particlesGlow" min="0" max="50" value="15" oninput="document.getElementById('glowValue').textContent=this.value; updateParticles()">
+                        </div>
+                        <div>
+                            <label>🌬️ حرکت افقی: <span class="range-value" id="driftValue">1.0</span></label>
+                            <input type="range" id="particlesDrift" min="0" max="30" value="10" oninput="document.getElementById('driftValue').textContent=(this.value/10).toFixed(1); updateParticles()">
+                        </div>
+                    </div>
+                    <div class="particles-row" style="grid-column: 1 / -1;">
+                        <div style="grid-column: 1 / -1;">
+                            <label>🎭 حالت نمایش:</label>
+                            <select id="particlesMode" onchange="updateParticles()">
+                                <option value="snow">برفی (آرام به پایین)</option>
+                                <option value="rain">بارانی (سریع به پایین)</option>
+                                <option value="float">شناور (پخش آرام)</option>
+                                <option value="wave">موجی (سینوسی)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="margin-top: 15px;" onclick="resetParticles()">🔄 بازنشانی به پیش‌فرض</button>
+                </div>
+                <div class="smart-note">
+                    💡 <strong>نکته:</strong> ذرات در دسکتاپ به‌صورت خودکار بزرگ‌تر، درخشان‌تر و بیشتر نمایش داده می‌شوند.
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>🏷️ لوگوی فوتر (قابل جابه‌جایی)</h3>
+                <div class="form-group">
+                    <label>لینک تصویر لوگو:</label>
+                    <input type="url" id="footerLogoUrl" placeholder="https://example.com/logo.png" style="direction: ltr; text-align: left;">
+                </div>
+                <div class="form-group">
+                    <label>ارتفاع لوگو (پیکسل): <span class="range-value" id="footerLogoHeightValue">300</span></label>
+                    <input type="range" id="footerLogoHeight" min="30" max="300" value="100" oninput="document.getElementById('footerLogoHeightValue').textContent=this.value; updateFooterLogoLive()">
+                </div>
+                <button class="btn" onclick="applyFooterLogo()">🏷️ اعمال لوگوی فوتر</button>
+                <button class="btn btn-secondary" onclick="removeFooterLogo()" style="margin-top: 10px;">🗑️ حذف لوگو</button>
+                <div class="smart-note">
+                    💡 <strong>حالت ویرایش:</strong> با فعال‌سازی حالت ویرایش، می‌توانید لوگو را با موس بکشید و در هر جای فوتر قرار دهید.
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>🎨 المان گرافیکی فوتر</h3>
+                <div class="sticker-controls">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary);">لینک تصویر (PNG/JPG):</label>
+                    <input type="url" id="footerElementUrl" class="sticker-url-input" placeholder="https://example.com/element.png" style="direction: ltr; text-align: left;">
+                    <button class="btn" onclick="addFooterElement()">➕ افزودن المان فوتر</button>
+                </div>
+                <div id="footerElementPanel" class="sticker-edit-panel">
+                    <h4>📐 تنظیمات المان فوتر</h4>
+                    <div class="sticker-size-row">
+                        <div>
+                            <label>موقعیت X (٪):</label>
+                            <input type="number" id="footerElemX" step="0.5" onchange="updateFooterElementFromInputs()">
+                        </div>
+                        <div>
+                            <label>موقعیت Y (٪):</label>
+                            <input type="number" id="footerElemY" step="0.5" onchange="updateFooterElementFromInputs()">
+                        </div>
+                    </div>
+                    <div class="sticker-size-row">
+                        <div>
+                            <label>عرض (پیکسل):</label>
+                            <input type="number" id="footerElemW" step="1" onchange="updateFooterElementFromInputs()">
+                        </div>
+                        <div>
+                            <label>ارتفاع (پیکسل):</label>
+                            <input type="number" id="footerElemH" step="1" onchange="updateFooterElementFromInputs()">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="removeFooterElement()" style="margin-top: 10px;">🗑️ حذف المان</button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>🎨 المان‌های گرافیکی (استیکرها)</h3>
+                <div class="sticker-controls">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary);">لینک تصویر (موبایل) - (PNG/JPG):</label>
+                    <input type="url" id="stickerUrlInput" class="sticker-url-input" placeholder="https://example.com/sticker.png">
+                    <button class="btn" onclick="addSticker()">➕ افزودن استیکر</button>
+                </div>
+                <div class="smart-note">
+                    💡 <strong>راهنما:</strong> پس از افزودن استیکر، پنل تنظیمات آن به‌صورت خودکار باز می‌شود. همچنین با کلیک روی هر استیکر در لیست زیر، می‌توانید منوی <strong>انیمیشن</strong> و سایر تنظیمات آن را ببینید.
+                </div>
+                <div class="sticker-list" id="stickerList"><div class="sticker-item"><div style="display: flex; align-items: center; flex: 1;"><img src="https://uploadkon.ir/uploads/ab8126_26پیوند-ها.png" alt="Sticker"><span style="margin-right: 10px; font-size: 13px;">هدر</span></div><button onclick="event.stopPropagation(); deleteSticker(1787737272546)">🗑️ حذف</button></div><div class="sticker-item"><div style="display: flex; align-items: center; flex: 1;"><img src="https://uploadkon.ir/uploads/f46c25_26BackgroundEraser-۲۰۲۶۰۲۱۱-۰۳۵۴۳۱۳۴۹.png" alt="Sticker"><span style="margin-right: 10px; font-size: 13px;">هدر</span></div><button onclick="event.stopPropagation(); deleteSticker(1787737359586)">🗑️ حذف</button></div><div class="sticker-item"><div style="display: flex; align-items: center; flex: 1;"><img src="https://uploadkon.ir/uploads/228326_26ویژه-مسابقه-و-هفته-وحدت-و-ولادت-حضرت-محمد-ﷺ-.png" alt="Sticker"><span style="margin-right: 10px; font-size: 13px;">هدر</span></div><button onclick="event.stopPropagation(); deleteSticker(1787738587343)">🗑️ حذف</button></div></div>
+                <div id="stickerEditPanel" class="sticker-edit-panel hidden">
+                    <h4>📐 تنظیمات استیکر انتخاب شده</h4>
+                    <div class="device-tabs">
+                        <button class="device-tab" id="tabMobile" onclick="switchDevice('mobile')">📱 موبایل</button>
+                        <button class="device-tab active" id="tabDesktop" onclick="switchDevice('desktop')">💻 دسکتاپ</button>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-size: 13px;">🖥️ استفاده از تنظیمات دسکتاپ برای این استیکر:</label>
+                        <label class="switch">
+                            <input type="checkbox" id="stickerUseDesktop" onchange="toggleStickerUseDesktop()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="sticker-size-row">
+                        <div style="grid-column: 1 / -1;">
+                            <label>📱 لینک تصویر (موبایل):</label>
+                            <input type="url" id="stickerUrlMobile" style="direction: ltr; text-align: left;" onchange="updateStickerUrlMobile()">
+                        </div>
+                    </div>
+                    <div class="sticker-size-row">
+                        <div style="grid-column: 1 / -1;">
+                            <label>💻 لینک تصویر (دسکتاپ) - اختیاری:</label>
+                            <input type="url" id="stickerUrlDesktop" style="direction: ltr; text-align: left;" onchange="updateStickerUrlDesktop()">
+                        </div>
+                    </div>
+                    <div class="sticker-size-row">
+                        <div style="grid-column: 1 / -1;">
+                            <label>📍 محل نمایش:</label>
+                            <select id="stickerTarget" onchange="updateStickerTarget()">
+                                <option value="header">هدر (بالای سایت)</option>
+                                <option value="registration">صفحه اصلی (ثبت‌نام)</option>
+                                <option value="quiz">صفحه سوالات (آزمون)</option>
+                                <option value="result">صفحه نتیجه (پایان)</option>
+                                <option value="siteFooter">فوتر (پایین سایت)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="sticker-size-row">
+                        <div>
+                            <label>موقعیت X (٪):</label>
+                            <input type="number" id="stickerX" step="0.5" onchange="updateStickerFromInputs()">
+                        </div>
+                        <div>
+                            <label>موقعیت Y (٪):</label>
+                            <input type="number" id="stickerY" step="0.5" onchange="updateStickerFromInputs()">
+                        </div>
+                    </div>
+                    <div class="sticker-size-row">
+                        <div>
+                            <label>عرض (٪ از بخش):</label>
+                            <input type="number" id="stickerW" step="0.5" onchange="updateStickerFromInputs()">
+                        </div>
+                        <div>
+                            <label>ارتفاع (٪ از بخش):</label>
+                            <input type="number" id="stickerH" step="0.5" onchange="updateStickerFromInputs()">
+                        </div>
+                    </div>
+
+                    <!-- ===== منوی انیمیشن استیکر ===== -->
+                    <div class="sticker-size-row">
+                        <div>
+                            <label>🎬 انیمیشن:</label>
+                            <select id="stickerAnimation" onchange="updateStickerAnimation()">
+                                <option value="none">خاموش</option>
+                                <option value="float">شناور</option>
+                                <option value="bounce">پرش</option>
+                                <option value="pulse">تپش</option>
+                                <option value="spin">چرخش</option>
+                                <option value="sway">تاب خوردن</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>⏱️ سرعت (ثانیه): <span class="range-value" id="animSpeedValue">3</span></label>
+                            <input type="range" id="stickerAnimSpeed" min="1" max="10" step="0.5" value="3" oninput="document.getElementById('animSpeedValue').textContent=this.value; updateStickerAnimation()">
+                        </div>
+                    </div>
+                    <div class="smart-note">
+                        💡 انیمیشن روی <strong>موبایل و دسکتاپ</strong> کار می‌کند و با درگ/ری‌سایز تداخل ندارد. برای خاموش کردن، گزینه «خاموش» را انتخاب کنید.
+                    </div>
+
+                    <div class="smart-note" id="deviceEditNote">💻 در حال ویرایش تنظیمات <strong>دسکتاپ</strong> هستید.</div>
+                </div>
+                <button class="btn btn-secondary" style="margin-top: 15px;" onclick="toggleEditMode()">
+                    ✏️ <span id="editModeText">فعال‌سازی حالت ویرایش</span>
+                </button>
+            </div>
+
+            <div class="admin-section">
+                <h3>📧 تنظیمات ایمیل</h3>
+                <div class="form-group">
+                    <label>ایمیل دریافت‌کننده:</label>
+                    <input type="email" id="adminEmail" value="shayegh333@gmail.com" onchange="updateEmail()">
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>💾 ذخیره نهایی</h3>
+                <button class="btn" onclick="exportHTML()">📥 دانلود فایل HTML نهایی</button>
+                <div class="save-note">
+                    ⚠️ <strong>مهم:</strong> تمام تغییرات فقط با دانلود این فایل به‌صورت دائمی ذخیره می‌شوند.
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="logoutAdmin()" style="margin-top: 20px;">🚪 خروج</button>
+        </div>
+    </div>
+
+    <script>
+        let isAdmin = false;
+        let stickers = [];
+        let selectedSticker = null;
+        let editMode = false;
+        let draggedSticker = null;
+        let dragStart = null;
+        let resizingSticker = null;
+        let resizeCorner = '';
+        let resizeStart = null;
+        let footerLogo = '';
+        let footerLogoHeight = 100;
+        let footerLogoPos = { xPct: 50, yPct: 50 };
+        let footerElement = null;
+        let footerElemDragging = null;
+        let footerElemDragStart = null;
+        let footerLogoDragging = false;
+        let footerLogoDragStart = null;
+        let headerHeightDesktop = 75;
+        let stickerEditModeDevice = 'mobile';
+        let headerImageMobile = 'https://via.placeholder.com/1080x1080/1a5c3a/c9a961?text=هفته+وحدت';
+        let headerImageDesktop = 'https://via.placeholder.com/1920x1080/1a5c3a/c9a961?text=هفته+وحدت';
+        
+        let currentSelection = null;
+        let confirmed = false;
+        
+        let particlesSettings = {
+            enabled: true,
+            color: '#c9a961',
+            count: 80,
+            speed: 1.0,
+            size: 3.0,
+            glow: 15,
+            drift: 1.0,
+            mode: 'snow'
+        };
+        
+        const YOUR_EMAIL = 'shayegh333@gmail.com';
+        let timeLeft = 13 * 60;
+        let timerInterval;
+        let currentQ = 0;
+        let answers = { userInfo: {}, answers: [] };
+
+        const TARGET_NAMES = {
+            header: 'هدر',
+            registration: 'صفحه اصلی',
+            quiz: 'صفحه سوالات',
+            result: 'صفحه نتیجه',
+            siteFooter: 'فوتر'
+        };
+
+        const OPTION_LABEL_MAP = {'A': '۱', 'B': '۲', 'C': '۳', 'D': '۴'};
+        
+        function convertOptionLabel(opt) {
+            return opt.replace(/^([A-D])\)/, function(m, letter) {
+                return (OPTION_LABEL_MAP[letter] || letter) + ')';
+            });
+        }
+
+        function isDesktopView() {
+            return window.innerWidth > 768;
+        }
+
+        const questions = [
+            { text: "🌅 سوال \n\nپیامبر (ص) در چه روزی از ماه ربیع‌الاول متولد شدند؟", options: ["۱ ربیع‌الاول", "۱۲ ربیع‌الاول", "۱۷ ربیع‌الاول", "۲۰ ربیع‌الاول"], correct: ["C"], difficulty: "easy" },
+            { text: "🌅 سوال ۲\n\nسال تولد پیامبر (ص) به چه نامی معروف است؟", options: ["عام‌الحزن", "عام‌الفیل", "عام‌الرماده", "عام‌الوفود"], correct: ["B"], difficulty: "easy" },
+            { 
+                text: "🎵 سوال  (صوتی)\n\nبه این قطعه صوتی گوش دهید و نام مداح را مشخص کنید.", 
+                options: ["حاج محمد رضا طاهری", "نریمان پناهی", "محمود کریمی", "حاج احمد واعظ"], 
+                correct: ["C"], 
+                difficulty: "medium",
+                audio: "https://uploadkon.ir/uploads/b69e26_26Mahmoud-Karimi-Veladar-Payambar-128-.mp3"
+            },
+            { text: "🌅 سوال \n\nنام پدر پیامبر (ص) چه بود؟", options: ["عبدالمطلب", "ابوطالب", "عبدالله بن عبدالمطلب", "ابوسفیان"], correct: ["C"], difficulty: "easy" },
+            { text: "🌅 سوال ۵\n\nنام مادر پیامبر (ص) چه بود؟", options: ["آمنه بنت وهب", "فاطمه بنت اسد", "حلیمه سعدیه", "حضرت خدیجه (س)"], correct: ["A"], difficulty: "easy" },
+            { text: "🌅 سوال ۶\n\nپدر پیامبر (ص) چه زمانی از دنیا رفت؟", options: ["در ۲ سالگی پیامبر", "در ۶ سالگی پیامبر", "قبل از تولد ایشان", "در ۸ سالگی پیامبر"], correct: ["C"], difficulty: "easy" },
+            { text: "🌅 سوال ۷\n\nاولین دایه‌ی پیامبر (ص) که چند روز ایشان را شیر داد چه کسی بود؟", options: ["حلیمه سعدیه", "ام‌ایمن", "شفاء", "ثویبه (کنیز ابولهب)"], correct: ["D"], difficulty: "easy" },
+            { text: "🌅 سوال \n\nدایه‌ی اصلی پیامبر (ص) که ایشان را به بادیه برد چه کسی بود؟", options: ["ثویبه", "حلیمه سعدیه", "ام‌کلثوم", "آمنه بنت وهب"], correct: ["B"], difficulty: "easy" },
+            { text: "🌅 سوال ۹\n\nپیامبر (ص) در چند سالگی مادرشان را از دست دادند؟", options: ["۲ سالگی", "۶ سالگی", "۸ سالگی", "۱۰ سالگی"], correct: ["B"], difficulty: "easy" },
+            { text: "🌅 سوال ۰\n\nبعد از فوت مادر، سرپرستی پیامبر (ص) را چه کسی بر عهده گرفت؟", options: ["ابوطالب", "حمزه", "عباس", "عبدالمطلب (پدربزرگ)"], correct: ["D"], difficulty: "easy" },
+            { text: "🌅 سوال ۱۱\n\nعبدالمطلب در چند سالگی پیامبر (ص) فوت کرد و سرپرستی به چه کسی رسید؟", options: ["۶ سالگی - عبدالمطلب", "۸ سالگی - ابوطالب", "۱۰ سالگی - ابوطالب", "۸ سالگی - عباس"], correct: ["B"], difficulty: "easy" },
+            { text: "🌅 سوال ۱۲\n\nپیامبر (ص) در جوانی به چه شغلی مشغول بودند؟", options: ["کشاورزی", "دامداری", "آهنگری", "تجارت و بازرگانی"], correct: ["D"], difficulty: "easy" },
+            { text: "🌅 سوال ۱۳\n\nپیامبر (ص) در چه سنی با خدیجه (س) ازدواج کردند؟", options: ["۲۰ سالگی", "۲۵ سالگی", "۳۰ سالگی", "۳۵ سالگی"], correct: ["B"], difficulty: "easy" },
+            { text: "🌅 سوال ۱۴\n\nخدیجه (س) هنگام ازدواج با پیامبر چند سال داشتند؟ (روایت مشهور)", options: ["۲۵ سال", "۳۰ سال", "۴۰ سال", "۵۰ سال"], correct: ["C"], difficulty: "easy" },
+            { text: "🌅 سوال ۱۵\n\nلقب پیامبر (ص) در میان مردم مکه پیش از بعثت چه بود؟", options: ["ابوالقاسم", "حبیب‌الله", "رحمة‌للعالمین", "محمد امین"], correct: ["D"], difficulty: "easy" },
+            { text: "🌅 سوال ۱۶\n\nدر بازسازی کعبه، چه کسی با درایت خود حجرالاسود را در جای خود قرار داد؟", options: ["ابوطالب", "ابوبکر", "عمر بن خطاب", "پیامبر اکرم (ص)"], correct: ["D"], difficulty: "easy" },
+
+            { text: "🕋 سوال ۱۷\n\nراهب مسیحی که در سفر شام نشانه‌های پیامبری را در چهره‌ی پیامبر دید چه نام داشت؟", options: ["نجاشی", "بُحیرا", "ورقه بن نوفل", "یاسر"], correct: ["B"], difficulty: "medium" },
+            { text: "🕋 سوال ۱۸\n\nپیامبر (ص) پیش از بعثت در کدام غار به عبادت و تفکر می‌پرداختند؟", options: ["غار ثور", "غار اصحاب کهف", "غار حرا", "غار حراء و ثور (هر دو)"], correct: ["C"], difficulty: "medium" },
+            { text: "📖 سوال ۱۹\n\nپیامبر (ص) در چند سالگی به پیامبری مبعوث شدند؟", options: ["۳۰ سالگی", "۳۵ سالگی", "۴۰ سالگی", "۴۳ سالگی"], correct: ["C"], difficulty: "medium" },
+            { text: "📖 سوال ۲۰\n\nاولین سوره‌ای که بر پیامبر (ص) نازل شد چه بود؟", options: ["حمد", "علق", "مدثر", "مزمل"], correct: ["B"], difficulty: "medium" },
+            { text: "📖 سوال ۲۱\n\nاولین آیه‌ی نازل شده بر پیامبر (ص) کدام است؟", options: ["بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "يَا أَيُّهَا الْمُدَّثِّرُ", "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "قُلْ هُوَ اللَّهُ أَحَدٌ"], correct: ["C"], difficulty: "medium" },
+            { text: "📖 سوال ۲۲\n\nاولین مردی که به پیامبر (ص) ایمان آورد چه کسی بود؟", options: ["ابوبکر", "عمر بن خطاب", "امام علی (ع)", "عثمان"], correct: ["C"], difficulty: "medium" },
+            { text: "📖 سوال ۲۳\n\nاولین زنی که به پیامبر (ص) ایمان آورد چه کسی بود؟", options: ["فاطمه بنت اسد", "عایشه", "ام‌ایمن", "حضرت خدیجه (س)"], correct: ["D"], difficulty: "medium" },
+            { text: "📖 سوال ۲۴\n\nدعوت آشکار پیامبر (ص) از کدام کوه مکه آغاز شد؟", options: ["کوه احد", "کوه صفا", "کوه مروه", "کوه حرا"], correct: ["B"], difficulty: "medium" },
+            { text: "📖 سوال ۲۵\n\nپیامبر (ص) هنگام دعوت عمومی چه جمله‌ای را ابتدا فرمودند؟", options: ["انما بعثت لاتمم مکارم الاخلاق", "یا بنی عبدالمطلب... لو أخبرتکم أن خیلاً بالوادی...", "من کنت مولاه فهذا علی مولاه", "ما ودعک ربک و ما قلی"], correct: ["B"], difficulty: "medium" },
+            { text: "📖 سوال ۲۶\n\nمسلمانان در کدام دره به مدت سه سال محاصره اقتصادی شدند؟", options: ["دره حنین", "وادی السلام", "شِعب ابی‌طالب", "شعب بدر"], correct: ["C"], difficulty: "medium" },
+            { text: "📖 سوال ۲۷\n\nسالی که ابوطالب و خدیجه (س) فوت شدند به چه نامی معروف است؟", options: ["عام‌الفیل", "عام‌الحزن", "عام‌الرماده", "عام‌الفیض"], correct: ["B"], difficulty: "medium" },
+            { text: "📖 سوال ۲۸\n\nشبی که پیامبر (ص) از مکه هجرت کردند و علی (ع) در بستر ایشان خوابید چه نام دارد؟", options: ["لیلة‌المبیت", "لیلة‌القدر", "لیلة‌الاسراء", "لیلة‌الهریر"], correct: ["A"], difficulty: "medium" },
+            { text: "🏙️ سوال ۲۹\n\nهجرت پیامبر (ص) از مکه به مدینه در چه سالی رخ داد؟", options: ["سال ۱۰ بعثت", "سال ۱۲ بعثت", "سال ۱۳ بعثت", "سال ۱ هجری"], correct: ["C"], difficulty: "medium" },
+            { text: "🏙️ سوال ۳۰\n\nپیامبر (ص) در مسیر هجرت، چند شب در غار ثور پناه گرفتند؟", options: ["یک شب", "دو شب", "سه شب", "یک هفته"], correct: ["C"], difficulty: "medium" },
+            { text: "🏙️ سوال ۳۱\n\nچه کسی در غار ثور همراه پیامبر (ص) بود؟", options: ["امام علی (ع)", "ابوبکر", "عمر بن خطاب", "عبدالله بن اریقط"], correct: ["B"], difficulty: "medium" },
+            { text: "🏙️ سوال ۳۲\n\nاولین مسجدی که پیامبر (ص) در مسیر هجرت ساختند چه نام دارد؟", options: ["مسجدالنبی", "مسجد قبا", "مسجدالاقصی", "مسجدالحرام"], correct: ["B"], difficulty: "medium" },
+            { text: "🏙️ سوال ۳۳\n\nاولین کاری که پیامبر (ص) پس از ورود به مدینه انجام دادند چه بود؟", options: ["پیمان برادری", "حفر خندق", "ساخت مسجدالنبی", "تشکیل سپاه دفاعی"], correct: ["C"], difficulty: "medium" },
+
+            { text: "⭐ سوال ۳۴\n\nپیامبر (ص) میان مهاجران و انصار چه پیمانی بستند؟", options: ["پیمان حدیبیه", "پیمان عقبه", "پیمان برادری (عقد اخوت)", "پیمان ثور"], correct: ["C"], difficulty: "hard" },
+            { text: "⭐ سوال ۳۵\n\nاولین جنگ مسلمانان با مشرکان چه نام داشت؟", options: ["جنگ احد", "جنگ بدر", "جنگ خندق", "جنگ حنین"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۳۶\n\nدر کدام جنگ مسلمانان شکست خوردند و پیامبر (ص) دندان‌شان شکست؟", options: ["جنگ بدر", "جنگ احد", "جنگ خندق", "جنگ تبوک"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۳۷\n\nبزرگ‌ترین جنگ دفاعی مسلمانان که با حفر خندق همراه بود چه نام دارد؟", options: ["جنگ بدر", "جنگ احد", "جنگ احزاب (خندق)", "جنگ خیبر"], correct: ["C"], difficulty: "hard" },
+            { text: "⭐ سوال ۳۸\n\nصلحی که قرآن آن را «فتح مبین» نامید چه بود؟", options: ["صلح حدیبیه", "صلح مکه", "صلح طائف", "صلح عقبه"], correct: ["A"], difficulty: "hard" },
+            { text: "⭐ سوال ۳۹\n\nفتح مکه در چه سالی رخ داد؟", options: ["سال ۶ هجری", "سال ۸ هجری", "سال ۱۰ هجری", "سال ۲ هجری"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۰\n\nپیامبر (ص) با چند نفر وارد مکه شدند؟", options: ["۳۱۳ نفر", "۱۰۰ نفر", "۳۰۰۰ نفر", "۱۰ هزار نفر"], correct: ["D"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۱\n\nپیامبر (ص) پس از فتح مکه، با مشرکان چه کردند؟", options: ["انتقام گرفتند", "عفو عمومی اعلام کردند", "تبعید کردند", "زندانی کردند"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۲\n\nدر حجة‌الوداع، پیامبر (ص) در چه مکانی دست علی (ع) را بالا بردند؟", options: ["عرفات", "منا", "غدیر خم", "مسجدالحرام"], correct: ["C"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۳\n\nجمله‌ی معروف پیامبر (ص) در غدیر خم درباره‌ی علی (ع) چه بود؟", options: ["انا مدینة العلم و علی بابها", "مَنْ کُنْتُ مَوْلاهُ فَهَذا عَلِیٌّ مَوْلاهُ", "انما ولیکم الله و رسوله", "کنت نبیا و آدم بین الماء و الطین"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۴\n\nآخرین سوره‌ی کاملی که بر پیامبر (ص) نازل شد چه نام دارد؟", options: ["مائده", "توبه", "نصر", "فتح"], correct: ["C"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۵\n\nپیامبر (ص) در چه سالی از دنیا رفتند؟", options: ["سال ۱۰ هجری", "سال ۱۱ هجری", "سال ۱۲ هجری", "سال ۱۳ هجری"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۶\n\nپیامبر (ص) در چند سالگی رحلت کردند؟", options: ["۶۰ سالگی", "۶۳ سالگی", "۶۵ سالگی", "۷۰ سالگی"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۷\n\nپیامبر (ص) در خانه‌ی چه کسی و در کدام شهر وفات یافتند؟", options: ["خانه فاطمه (س) - مدینه", "خانه عایشه - مدینه", "مسجدالنبی - مکه", "خانه ابوبکر - مدینه"], correct: ["B"], difficulty: "hard" },
+            { text: "⭐ سوال ۴۸\n\nمرقد مطهر پیامبر (ص) امروزه در کجا قرار دارد؟", options: ["مکه مکرمه", "مسجدالنبی در شهر مدینه", "نجف اشرف", "قبرستان بقیع"], correct: ["B"], difficulty: "hard" },
+
+            { 
+                text: "🎵 سوال ۹ (صوتی)\n\nبه این قطعه صوتی گوش دهید و نام مداح را مشخص کنید.", 
+                options: ["میثم مطیعی", "سید مجید بنی‌فاطمه", "حسین طاهری", "سید رضا نریمانی"], 
+                correct: ["B"], 
+                difficulty: "medium",
+                audio: "https://uploadkon.ir/uploads/da7026_26d31e7c5f8ba672c1e8b9ad146c8b8ffd-093949533.mp3"
+            }
+        ];
+
+        function getQuestionPoints(questionIndex) {
+            const q = questions[questionIndex];
+            if (!q) return 1;
+            switch(q.difficulty) {
+                case 'easy': return 1;
+                case 'medium': return 2;
+                case 'hard': return 3;
+                default: return 1;
+            }
+        }
+
+        function scrollToQuizTop() {
+            setTimeout(() => {
+                const quizSection = document.getElementById('quiz');
+                if (quizSection && !quizSection.classList.contains('hidden')) {
+                    quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    setTimeout(() => {
+                        window.scrollBy({ top: -20, behavior: 'smooth' });
+                    }, 300);
+                }
+            }, 50);
+        }
+
+        function startQuiz() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+            const nationalId = document.getElementById('nationalId').value.trim();
+
+            if (!firstName || !lastName || !studentId || !nationalId) { alert('❌ لطفاً همه فیلدها را پر کنید'); return; }
+            if (!/^\d{10}$/.test(nationalId)) { alert('❌ کد ملی باید ۱۰ رقم باشد'); return; }
+
+            answers.userInfo = { firstName, lastName, studentId, nationalId };
+            document.getElementById('registration').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            showQuestion();
+            startTimer();
+            updateStickerPositions();
+            scrollToQuizTop();
+        }
+
+        function showQuestion() {
+            currentSelection = null;
+            confirmed = false;
+            
+            const q = questions[currentQ];
+            const progress = ((currentQ) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `سوال ${currentQ + 1} از ${questions.length}`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}٪`;
+
+            let diffBadge = '';
+            let points = getQuestionPoints(currentQ);
+            if (q.difficulty === 'easy') diffBadge = `<span class="difficulty-badge difficulty-easy">آسان (${points} امتیاز)</span>`;
+            else if (q.difficulty === 'medium') diffBadge = `<span class="difficulty-badge difficulty-medium">متوسط (${points} امتیاز)</span>`;
+            else if (q.difficulty === 'hard') diffBadge = `<span class="difficulty-badge difficulty-hard">سخت (${points} امتیاز)</span>`;
+
+            let html = `<div class="question-card">`;
+            
+            if (q.audio) {
+                html += `<div class="question-badge audio-badge">🎵 سوال صوتی - سوال ${currentQ + 1}</div>`;
+            } else {
+                html += `<div class="question-badge">سوال ${currentQ + 1} ${diffBadge}</div>`;
+            }
+
+            html += `<div class="question-text">${q.text}</div>`;
+
+            if (q.audio) {
+                html += `
+                    <div class="audio-player-container">
+                        <label>🎧 برای شنیدن قطعه صوتی، دکمه پخش را بزنید:</label>
+                        <audio controls preload="none">
+                            <source src="${q.audio}" type="audio/mpeg">
+                            مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
+                        </audio>
+                    </div>
+                `;
+            }
+
+            html += `<div class="options">`;
+            q.options.forEach((opt, i) => { 
+                const displayOpt = convertOptionLabel(String.fromCharCode(65 + i) + ') ' + opt);
+                html += `<div class="option" onclick="selectOption('${String.fromCharCode(65 + i)}')">${displayOpt}</div>`; 
+            });
+            html += `</div>
+            <button class="btn" id="confirmBtn" onclick="confirmAnswer()" style="margin-top: 25px;">✅ تایید پاسخ</button>
+            <button class="btn hidden" id="nextBtn" onclick="nextQuestion()" style="margin-top: 25px;">${currentQ + 1 < questions.length ? 'سوال بعد ←' : '🏁 پایان مسابقه'}</button>`;
+            document.getElementById('questionsContainer').innerHTML = html;
+        }
+
+        function selectOption(letter) {
+            if (confirmed) return;
+            currentSelection = letter;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        // ===== تایید پاسخ - بدون نمایش جواب درست =====
+        function confirmAnswer() {
+            if (confirmed) return;
+            if (!currentSelection) { alert('❌ لطفاً ابتدا یک گزینه انتخاب کنید'); return; }
+            
+            confirmed = true;
+            answers.answers[currentQ] = currentSelection;
+            
+            // فقط قفل کردن گزینه‌ها - جواب درست نشان داده نمی‌شود
+            document.querySelectorAll('#questionsContainer .option').forEach(el => el.classList.add('disabled'));
+            
+            document.getElementById('confirmBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (!confirmed) { alert('❌ لطفاً ابتدا پاسخ خود را تایید کنید'); return; }
+            currentQ++;
+            if (currentQ < questions.length) {
+                showQuestion();
+                scrollToQuizTop();
+            } else {
+                finishQuiz();
+                scrollToQuizTop();
+            }
+            updateStickerPositions();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').textContent = `⏳ ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+                if (timeLeft <= 60) document.getElementById('timer').classList.add('warning');
+                if (timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    alert('⏰ زمان شما به پایان رسید!\n\nپاسخ‌های شما ارسال می‌شود.');
+                    finishQuiz(); 
+                }
+            }, 1000);
+        }
+
+        function drawResultsChart(correctCount, wrongCount, unansweredCount) {
+            const total = questions.length;
+            const correctPct = (correctCount / total) * 100;
+            const wrongPct = (wrongCount / total) * 100;
+            const unansweredPct = (unansweredCount / total) * 100;
+            
+            setTimeout(() => {
+                const correctBar = document.getElementById('correctBar');
+                const wrongBar = document.getElementById('wrongBar');
+                const unansweredBar = document.getElementById('unansweredBar');
+                
+                if (correctBar) {
+                    correctBar.style.width = Math.max(correctPct, 5) + '%';
+                    document.getElementById('correctValue').textContent = correctCount + ' سوال';
+                }
+                if (wrongBar) {
+                    wrongBar.style.width = Math.max(wrongPct, 5) + '%';
+                    document.getElementById('wrongValue').textContent = wrongCount + ' سوال';
+                }
+                if (unansweredBar) {
+                    unansweredBar.style.width = Math.max(unansweredPct, 5) + '%';
+                    document.getElementById('unansweredValue').textContent = unansweredCount + ' سوال';
+                }
+            }, 300);
+        }
+
+        async function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            let totalScore = 0;
+            let maxPossibleScore = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+            let unansweredCount = 0;
+            
+            questions.forEach((q, i) => {
+                const points = getQuestionPoints(i);
+                maxPossibleScore += points;
+                
+                if (!answers.answers[i]) {
+                    unansweredCount++;
+                } else if (q.correct.includes(answers.answers[i])) {
+                    totalScore += points;
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            });
+            
+            const scoreFrom100 = Math.round((totalScore / maxPossibleScore) * 100);
+            
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = scoreFrom100;
+            document.getElementById('resultLabel').textContent = `امتیاز شما از ۱۰۰`;
+            
+            drawResultsChart(correctCount, wrongCount, unansweredCount);
+            
+            const statusBox = document.getElementById('statusBox');
+            statusBox.innerHTML = '<div class="success-msg">⏳ در حال ارسال نتایج...</div>';
+            
+            try {
+                await sendResults(scoreFrom100, correctCount, wrongCount, unansweredCount);
+                statusBox.innerHTML = '<div class="success-msg">✅ نتایج با موفقیت ثبت شد!<br><br>با تشکر از شرکت شما 🌙</div>';
+            } catch (err) {
+                statusBox.innerHTML = '<div class="success-msg">✅ نتایج ثبت شد!</div>';
+            }
+            updateStickerPositions();
+        }
+
+        async function sendResults(scoreFrom100, correctCount, wrongCount, unansweredCount) {
+            const answersPersian = answers.answers.map(letter => OPTION_LABEL_MAP[letter] || letter);
+            
+            const fields = {
+                '_subject': `نتیجه مسابقه - ${answers.userInfo.firstName} ${answers.userInfo.lastName}`,
+                'نام': answers.userInfo.firstName,
+                'نام خانوادگی': answers.userInfo.lastName,
+                'شماره دانشجویی': answers.userInfo.studentId,
+                'کد ملی': answers.userInfo.nationalId,
+                'امتیاز از ۱۰۰': scoreFrom100,
+                'تعداد پاسخ درست': correctCount,
+                'تعداد پاسخ غلط': wrongCount,
+                'تعداد بدون پاسخ': unansweredCount,
+                'پاسخ سوالات': answersPersian.join(', '),
+                '_template': 'table',
+                '_captcha': 'false',
+                '_next': window.location.href
+            };
+
+            try {
+                const formData = new FormData();
+                for (const [key, value] of Object.entries(fields)) {
+                    formData.append(key, value);
+                }
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                
+                const response = await fetch(`https://formsubmit.co/ajax/${YOUR_EMAIL}`, { 
+                    method: 'POST', 
+                    body: formData,
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error('HTTP error: ' + response.status);
+                const result = await response.json();
+                if (result && (result.success === 'true' || result.status === 'success' || response.ok)) {
+                    return result;
+                } else {
+                    throw new Error('Response not successful');
+                }
+            } catch (err) {
+                await new Promise((resolve) => {
+                    try {
+                        let iframe = document.getElementById('_hidden_submit_iframe');
+                        if (!iframe) {
+                            iframe = document.createElement('iframe');
+                            iframe.id = '_hidden_submit_iframe';
+                            iframe.name = '_hidden_submit_iframe';
+                            iframe.style.display = 'none';
+                            iframe.style.position = 'absolute';
+                            iframe.style.left = '-9999px';
+                            document.body.appendChild(iframe);
+                        }
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `https://formsubmit.co/${YOUR_EMAIL}`;
+                        form.target = '_hidden_submit_iframe';
+                        form.style.display = 'none';
+                        form.acceptCharset = 'UTF-8';
+                        for (const [key, value] of Object.entries(fields)) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = value;
+                            form.appendChild(input);
+                        }
+                        document.body.appendChild(form);
+                        form.submit();
+                        setTimeout(() => { try { form.remove(); } catch(e) {} resolve(); }, 3000);
+                    } catch (formErr) { resolve(); }
+                });
+            }
+        }
+
+        function applyHeaderImage() {
+            const img = document.getElementById('headerImage');
+            if (isDesktopView() && headerImageDesktop) img.src = headerImageDesktop;
+            else if (headerImageMobile) img.src = headerImageMobile;
+        }
+
+        let particles = [];
+        let particlesCanvas, particlesCtx, particlesAnimId;
+
+        class Particle {
+            constructor(canvas, settings) { this.canvas = canvas; this.settings = settings; this.reset(true); }
+            reset(initial = false) {
+                const w = this.canvas ? this.canvas.width : 100;
+                const h = this.canvas ? this.canvas.height : 100;
+                this.x = Math.random() * w;
+                this.y = initial ? Math.random() * h : -20;
+                this.size = (Math.random() * 0.7 + 0.5) * this.settings.size;
+                this.speedY = (Math.random() * 0.5 + 0.5) * this.settings.speed;
+                this.speedX = (Math.random() - 0.5) * this.settings.drift;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.fadeSpeed = Math.random() * 0.003 + 0.001;
+                this.wobble = Math.random() * Math.PI * 2;
+                this.wobbleSpeed = Math.random() * 0.02 + 0.01;
+            }
+            update() {
+                const mode = this.settings.mode;
+                if (mode === 'snow') { this.y += this.speedY * 0.5; this.wobble += this.wobbleSpeed; this.x += Math.sin(this.wobble) * 0.3 + this.speedX * 0.3; }
+                else if (mode === 'rain') { this.y += this.speedY * 1.5; this.x += this.speedX * 0.5; }
+                else if (mode === 'float') { this.y += this.speedY * 0.2; this.wobble += this.wobbleSpeed; this.x += Math.sin(this.wobble) * 0.8; }
+                else if (mode === 'wave') { this.y += this.speedY * 0.6; this.wobble += this.wobbleSpeed * 1.5; this.x += Math.sin(this.wobble) * 1.5; }
+                this.opacity -= this.fadeSpeed;
+                const h = this.canvas ? this.canvas.height : 100;
+                if (this.y > h + 20 || this.opacity <= 0) this.reset();
+            }
+            draw(ctx) {
+                const boost = isDesktopView() ? 1.5 : 1;
+                const glowBoost = isDesktopView() ? 1.6 : 1;
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.shadowBlur = this.settings.glow * glowBoost;
+                ctx.shadowColor = this.settings.color;
+                ctx.fillStyle = this.settings.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * boost, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particlesCanvas = document.getElementById('particlesCanvas');
+            particlesCtx = particlesCanvas.getContext('2d');
+            resizeParticlesCanvas();
+            createParticles();
+            animateParticles();
+            window.addEventListener('resize', () => { resizeParticlesCanvas(); createParticles(); });
+        }
+
+        function resizeParticlesCanvas() {
+            const header = document.getElementById('header');
+            particlesCanvas.width = header.offsetWidth;
+            particlesCanvas.height = header.offsetHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            if (!particlesSettings.enabled) return;
+            if (!particlesCanvas) return;
+            let count = particlesSettings.count;
+            if (isDesktopView()) count = Math.min(400, Math.round(count * 1.3));
+            for (let i = 0; i < count; i++) particles.push(new Particle(particlesCanvas, particlesSettings));
+        }
+
+        function animateParticles() {
+            if (!particlesCtx) return;
+            particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            if (particlesSettings.enabled) particles.forEach(p => { p.update(); p.draw(particlesCtx); });
+            particlesAnimId = requestAnimationFrame(animateParticles);
+        }
+
+        function updateParticles() {
+            particlesSettings.enabled = document.getElementById('particlesEnabled').checked;
+            particlesSettings.color = document.getElementById('particlesColor').value;
+            particlesSettings.count = parseInt(document.getElementById('particlesCount').value);
+            particlesSettings.speed = parseFloat(document.getElementById('particlesSpeed').value) / 10;
+            particlesSettings.size = parseFloat(document.getElementById('particlesSize').value) / 10;
+            particlesSettings.glow = parseInt(document.getElementById('particlesGlow').value);
+            particlesSettings.drift = parseFloat(document.getElementById('particlesDrift').value) / 10;
+            particlesSettings.mode = document.getElementById('particlesMode').value;
+            particles.forEach(p => p.settings = particlesSettings);
+            if (particles.length !== particlesSettings.count) createParticles();
+            syncEmbeddedState();
+        }
+
+        function resetParticles() {
+            particlesSettings = { enabled: true, color: '#c9a961', count: 80, speed: 1.0, size: 3.0, glow: 15, drift: 1.0, mode: 'snow' };
+            document.getElementById('particlesEnabled').checked = true;
+            document.getElementById('particlesColor').value = '#c9a961';
+            document.getElementById('particlesCount').value = 80;
+            document.getElementById('countValue').textContent = '80';
+            document.getElementById('particlesSpeed').value = 10;
+            document.getElementById('speedValue').textContent = '1.0';
+            document.getElementById('particlesSize').value = 30;
+            document.getElementById('sizeValue').textContent = '3.0';
+            document.getElementById('particlesGlow').value = 15;
+            document.getElementById('glowValue').textContent = '15';
+            document.getElementById('particlesDrift').value = 10;
+            document.getElementById('driftValue').textContent = '1.0';
+            document.getElementById('particlesMode').value = 'snow';
+            updateParticles();
+        }
+
+        function applyParticlesSettings(settings) {
+            if (!settings) return;
+            particlesSettings = { ...particlesSettings, ...settings };
+            document.getElementById('particlesEnabled').checked = particlesSettings.enabled;
+            document.getElementById('particlesColor').value = particlesSettings.color;
+            document.getElementById('particlesCount').value = particlesSettings.count;
+            document.getElementById('countValue').textContent = particlesSettings.count;
+            document.getElementById('particlesSpeed').value = particlesSettings.speed * 10;
+            document.getElementById('speedValue').textContent = particlesSettings.speed.toFixed(1);
+            document.getElementById('particlesSize').value = particlesSettings.size * 10;
+            document.getElementById('sizeValue').textContent = particlesSettings.size.toFixed(1);
+            document.getElementById('particlesGlow').value = particlesSettings.glow;
+            document.getElementById('glowValue').textContent = particlesSettings.glow;
+            document.getElementById('particlesDrift').value = particlesSettings.drift * 10;
+            document.getElementById('driftValue').textContent = particlesSettings.drift.toFixed(1);
+            document.getElementById('particlesMode').value = particlesSettings.mode;
+            createParticles();
+        }
+
+        function toggleAdminPanel() { document.getElementById('adminPanel').classList.toggle('active'); }
+
+        function checkAdminPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === 'admin123') {
+                isAdmin = true;
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                loadAdminData();
+            } else { alert('❌ رمز عبور اشتباه است'); }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminContent').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+            toggleAdminPanel();
+        }
+
+        function loadAdminData() {
+            document.getElementById('adminSiteTitle').value = document.getElementById('siteTitle').textContent;
+            document.getElementById('adminSiteSubtitle').value = document.getElementById('siteSubtitle').textContent;
+            document.getElementById('adminEmail').value = YOUR_EMAIL;
+            document.getElementById('headerImageMobileUrl').value = headerImageMobile;
+            document.getElementById('headerImageDesktopUrl').value = headerImageDesktop;
+            document.getElementById('footerLogoUrl').value = footerLogo;
+            document.getElementById('footerLogoHeight').value = footerLogoHeight;
+            document.getElementById('footerLogoHeightValue').textContent = footerLogoHeight;
+            document.getElementById('headerHeightDesktop').value = headerHeightDesktop;
+            document.getElementById('headerHeightValue').textContent = headerHeightDesktop;
+            renderStickerList();
+            renderFooterElementPanel();
+        }
+
+        function updateSiteTitle() { document.getElementById('siteTitle').textContent = document.getElementById('adminSiteTitle').value; syncEmbeddedState(); }
+        function updateSiteSubtitle() { document.getElementById('siteSubtitle').textContent = document.getElementById('adminSiteSubtitle').value; syncEmbeddedState(); }
+        function updateEmail() {}
+        
+        function updateHeaderImage() {
+            headerImageMobile = document.getElementById('headerImageMobileUrl').value.trim();
+            headerImageDesktop = document.getElementById('headerImageDesktopUrl').value.trim();
+            applyHeaderImage();
+            syncEmbeddedState();
+            alert('✅ تصویر هدر به‌روزرسانی شد');
+        }
+
+        function updateHeaderHeightDesktop() {
+            headerHeightDesktop = parseInt(document.getElementById('headerHeightDesktop').value);
+            updateStickerPositions();
+            syncEmbeddedState();
+        }
+
+        function applyFooterLogo() {
+            footerLogo = document.getElementById('footerLogoUrl').value.trim();
+            footerLogoHeight = parseInt(document.getElementById('footerLogoHeight').value) || 100;
+            renderFooterLogo();
+            syncEmbeddedState();
+        }
+
+        function updateFooterLogoLive() {
+            footerLogoHeight = parseInt(document.getElementById('footerLogoHeight').value) || 100;
+            const img = document.getElementById('footerLogoImg');
+            if (img) img.style.height = footerLogoHeight + 'px';
+            updateFooterLogoPosition();
+            syncEmbeddedState();
+        }
+
+        function removeFooterLogo() {
+            footerLogo = '';
+            renderFooterLogo();
+            document.getElementById('footerLogoUrl').value = '';
+            syncEmbeddedState();
+        }
+
+        function renderFooterLogo() {
+            const img = document.getElementById('footerLogoImg');
+            if (footerLogo) { img.src = footerLogo; img.style.height = footerLogoHeight + 'px'; img.style.display = 'block'; }
+            else { img.style.display = 'none'; }
+            updateFooterLogoPosition();
+        }
+
+        function updateFooterLogoPosition() {
+            const wrapper = document.getElementById('footerLogoWrapper');
+            const container = document.getElementById('footerLogoDraggable');
+            if (!wrapper || !container) return;
+            wrapper.style.left = footerLogoPos.xPct + '%';
+            wrapper.style.top = footerLogoPos.yPct + '%';
+            wrapper.style.transform = 'translate(-50%, -50%)';
+        }
+
+        function addFooterElement() {
+            const url = document.getElementById('footerElementUrl').value.trim();
+            if (!url) { alert('❌ لطفاً لینک تصویر را وارد کنید'); return; }
+            footerElement = { url: url, xPct: 50, yPct: 50, width: 150, height: 150 };
+            renderFooterElement();
+            renderFooterElementPanel();
+            syncEmbeddedState();
+            document.getElementById('footerElementUrl').value = '';
+        }
+
+        function renderFooterElement() {
+            const container = document.getElementById('footerElementContainer');
+            if (!container) return;
+            const old = document.getElementById('footerElementDiv');
+            if (old) old.remove();
+            if (!footerElement) return;
+            const div = document.createElement('div');
+            div.id = 'footerElementDiv';
+            div.style.position = 'absolute';
+            div.style.left = footerElement.xPct + '%';
+            div.style.top = footerElement.yPct + '%';
+            div.style.transform = 'translate(-50%, -50%)';
+            div.style.width = footerElement.width + 'px';
+            div.style.height = footerElement.height + 'px';
+            div.style.pointerEvents = 'none';
+            div.innerHTML = `<img src="${footerElement.url}" style="width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
+            if (editMode) {
+                div.style.pointerEvents = 'auto';
+                div.style.cursor = 'move';
+                div.style.border = '2px dashed var(--secondary)';
+                div.style.borderRadius = '8px';
+            }
+            container.appendChild(div);
+        }
+
+        function renderFooterElementPanel() {
+            const panel = document.getElementById('footerElementPanel');
+            if (!panel) return;
+            if (footerElement) {
+                panel.classList.remove('hidden');
+                document.getElementById('footerElemX').value = Math.round(footerElement.xPct * 10) / 10;
+                document.getElementById('footerElemY').value = Math.round(footerElement.yPct * 10) / 10;
+                document.getElementById('footerElemW').value = Math.round(footerElement.width);
+                document.getElementById('footerElemH').value = Math.round(footerElement.height);
+            } else { panel.classList.add('hidden'); }
+        }
+
+        function updateFooterElementFromInputs() {
+            if (!footerElement) return;
+            footerElement.xPct = parseFloat(document.getElementById('footerElemX').value) || 50;
+            footerElement.yPct = parseFloat(document.getElementById('footerElemY').value) || 50;
+            footerElement.width = Math.max(20, parseInt(document.getElementById('footerElemW').value) || 100);
+            footerElement.height = Math.max(20, parseInt(document.getElementById('footerElemH').value) || 100);
+            renderFooterElement();
+            syncEmbeddedState();
+        }
+
+        function removeFooterElement() {
+            if (!footerElement) return;
+            if (confirm('آیا مطمئن هستید؟')) {
+                footerElement = null;
+                const div = document.getElementById('footerElementDiv');
+                if (div) div.remove();
+                renderFooterElementPanel();
+                syncEmbeddedState();
+            }
+        }
+
+        function switchDevice(device) {
+            stickerEditModeDevice = device;
+            document.getElementById('tabMobile').classList.toggle('active', device === 'mobile');
+            document.getElementById('tabDesktop').classList.toggle('active', device === 'desktop');
+            const note = document.getElementById('deviceEditNote');
+            if (device === 'desktop') note.innerHTML = '💻 در حال ویرایش تنظیمات <strong>دسکتاپ</strong> هستید.';
+            else note.innerHTML = '💡 در حال ویرایش تنظیمات <strong>موبایل</strong> هستید.';
+            if (selectedSticker) { const sticker = stickers.find(s => s.id === selectedSticker); if (sticker) syncStickerInputs(sticker); }
+        }
+
+        function toggleStickerUseDesktop() {
+            if (!selectedSticker) return;
+            const sticker = stickers.find(s => s.id === selectedSticker);
+            if (!sticker) return;
+            sticker.useDesktop = document.getElementById('stickerUseDesktop').checked;
+            updateStickerPositions();
+            syncEmbeddedState();
+        }
+
+        function updateStickerUrlMobile() {
+            if (!selectedSticker) return;
+            const sticker = stickers.find(s => s.id === selectedSticker);
+            if (!sticker) return;
+            sticker.url = document.getElementById('stickerUrlMobile').value.trim();
+            updateStickerPositions();
+            renderStickerList();
+            syncEmbeddedState();
+        }
+
+        function updateStickerUrlDesktop() {
+            if (!selectedSticker) return;
+            const sticker = stickers.find(s => s.id === selectedSticker);
+            if (!sticker) return;
+            sticker.urlD = document.getElementById('stickerUrlDesktop').value.trim();
+            updateStickerPositions();
+            renderStickerList();
+            syncEmbeddedState();
+        }
+
+        const ANIM_TIMING = { float: 'ease-in-out', bounce: 'cubic-bezier(0.28, 0.84, 0.42, 1)', pulse: 'ease-in-out', spin: 'linear', sway: 'ease-in-out' };
+
+        function applyStickerAnimation(div, sticker) {
+            if (!div) return;
+            const img = div.querySelector('img');
+            if (!img) return;
+            if (sticker.animation && sticker.animation !== 'none') {
+                const speed = sticker.animSpeed || 3;
+                const timing = ANIM_TIMING[sticker.animation] || 'ease-in-out';
+                img.style.animation = `sticker-${sticker.animation} ${speed}s ${timing} infinite`;
+            } else {
+                img.style.animation = 'none';
+            }
+        }
+
+        function updateStickerAnimation() {
+            if (!selectedSticker) return;
+            const sticker = stickers.find(s => s.id === selectedSticker);
+            if (!sticker) return;
+            sticker.animation = document.getElementById('stickerAnimation').value;
+            sticker.animSpeed = parseFloat(document.getElementById('stickerAnimSpeed').value) || 3;
+            const div = document.getElementById(`sticker-${sticker.id}`);
+            applyStickerAnimation(div, sticker);
+            syncEmbeddedState();
+        }
+
+        function addSticker() {
+            const url = document.getElementById('stickerUrlInput').value.trim();
+            if (!url) { alert('❌ لطفاً لینک تصویر را وارد کنید'); return; }
+            const sticker = { id: Date.now(), url: url, urlD: '', target: 'header', xPct: 40, yPct: 40, wPct: 15, hPct: 25, xPctD: 40, yPctD: 40, wPctD: 15, hPctD: 25, useDesktop: true, animation: 'none', animSpeed: 3 };
+            stickers.push(sticker);
+            renderSticker(sticker);
+            renderStickerList();
+            updateStickerPositions();
+            syncEmbeddedState();
+            document.getElementById('stickerUrlInput').value = '';
+            // باز کردن خودکار پنل تنظیمات تا منوی انیمیشن دیده شود
+            selectSticker(sticker.id);
+        }
+
+        function renderSticker(sticker) {
+            const overlay = document.getElementById('stickersGlobalOverlay');
+            let div = document.getElementById(`sticker-${sticker.id}`);
+            if (!div) {
+                div = document.createElement('div');
+                div.className = 'sticker-element';
+                div.id = `sticker-${sticker.id}`;
+                div.innerHTML = `<img src="${sticker.url}" alt="Sticker"><div class="sticker-handle nw" data-corner="nw"></div><div class="sticker-handle ne" data-corner="ne"></div><div class="sticker-handle sw" data-corner="sw"></div><div class="sticker-handle se" data-corner="se"></div>`;
+                if (editMode) div.classList.add('edit-mode');
+                overlay.appendChild(div);
+            }
+            applyStickerAnimation(div, sticker);
+        }
+
+        function renderAllStickers() { document.querySelectorAll('.sticker-element').forEach(el => el.remove()); stickers.forEach(s => renderSticker(s)); updateStickerPositions(); }
+
+        function updateStickerPositions() {
+            const isDesktop = isDesktopView();
+            const header = document.getElementById('header');
+            applyHeaderImage();
+            if (isDesktop) header.style.minHeight = headerHeightDesktop + 'vh';
+            else header.style.minHeight = '';
+            stickers.forEach(sticker => {
+                const div = document.getElementById(`sticker-${sticker.id}`);
+                const section = document.getElementById(sticker.target);
+                if (!div || !section) return;
+                let xPct = sticker.xPct, yPct = sticker.yPct, wPct = sticker.wPct, hPct = sticker.hPct;
+                if (isDesktop && sticker.useDesktop) { xPct = sticker.xPctD; yPct = sticker.yPctD; wPct = sticker.wPctD; hPct = sticker.hPctD; }
+                const imgEl = div.querySelector('img');
+                if (imgEl) { const targetSrc = (isDesktop && sticker.urlD) ? sticker.urlD : sticker.url; if (targetSrc && imgEl.src !== targetSrc) imgEl.src = targetSrc; }
+                const sectionRect = section.getBoundingClientRect();
+                const scrollY = window.scrollY || window.pageYOffset;
+                const scrollX = window.scrollX || window.pageXOffset;
+                div.style.left = (sectionRect.left + scrollX + (xPct / 100) * sectionRect.width) + 'px';
+                div.style.top = (sectionRect.top + scrollY + (yPct / 100) * sectionRect.height) + 'px';
+                div.style.width = ((wPct / 100) * sectionRect.width) + 'px';
+                div.style.height = ((hPct / 100) * sectionRect.height) + 'px';
+            });
+        }
+
+        function renderStickerList() {
+            const list = document.getElementById('stickerList');
+            list.innerHTML = '';
+            stickers.forEach(sticker => {
+                const item = document.createElement('div');
+                item.className = 'sticker-item' + (selectedSticker === sticker.id ? ' selected' : '');
+                item.onclick = () => selectSticker(sticker.id);
+                item.innerHTML = `<div style="display: flex; align-items: center; flex: 1;"><img src="${sticker.url}" alt="Sticker"><span style="margin-right: 10px; font-size: 13px;">${TARGET_NAMES[sticker.target] || 'هدر'}</span></div><button onclick="event.stopPropagation(); deleteSticker(${sticker.id})">🗑️ حذف</button>`;
+                list.appendChild(item);
+            });
+        }
+
+        function selectSticker(id) {
+            selectedSticker = id;
+            renderStickerList();
+            const sticker = stickers.find(s => s.id === id);
+            if (sticker) {
+                document.getElementById('stickerEditPanel').classList.remove('hidden');
+                document.getElementById('stickerTarget').value = sticker.target;
+                document.getElementById('stickerUseDesktop').checked = sticker.useDesktop || false;
+                document.getElementById('stickerUrlMobile').value = sticker.url || '';
+                document.getElementById('stickerUrlDesktop').value = sticker.urlD || '';
+                document.getElementById('stickerAnimation').value = sticker.animation || 'none';
+                document.getElementById('stickerAnimSpeed').value = sticker.animSpeed || 3;
+                document.getElementById('animSpeedValue').textContent = sticker.animSpeed || 3;
+                syncStickerInputs(sticker);
+            }
+        }
+
+        function syncStickerInputs(sticker) {
+            if (stickerEditModeDevice === 'desktop') {
+                document.getElementById('stickerX').value = Math.round(sticker.xPctD * 10) / 10;
+                document.getElementById('stickerY').value = Math.round(sticker.yPctD * 10) / 10;
+                document.getElementById('stickerW').value = Math.round(sticker.wPctD * 10) / 10;
+                document.getElementById('stickerH').value = Math.round(sticker.hPctD * 10) / 10;
+            } else {
+                document.getElementById('stickerX').value = Math.round(sticker.xPct * 10) / 10;
+                document.getElementById('stickerY').value = Math.round(sticker.yPct * 10) / 10;
+                document.getElementById('stickerW').value = Math.round(sticker.wPct * 10) / 10;
+                document.getElementById('stickerH').value = Math.round(sticker.hPct * 10) / 10;
+            }
+        }
+
+        function updateStickerFromInputs() {
+            if (!selectedSticker) return;
+            const sticker = stickers.find(s => s.id === selectedSticker);
+            if (!sticker) return;
+            if (stickerEditModeDevice === 'desktop') {
+                sticker.xPctD = parseFloat(document.getElementById('stickerX').value) || 0;
+                sticker.yPctD = parseFloat(document.getElementById('stickerY').value) || 0;
+                sticker.wPctD = Math.max(3, parseFloat(document.getElementById('stickerW').value) || 10);
+                sticker.hPctD = Math.max(3, parseFloat(document.getElementById('stickerH').value) || 10);
+            } else {
+                sticker.xPct = parseFloat(document.getElementById('stickerX').value) || 0;
+                sticker.yPct = parseFloat(document.getElementById('stickerY').value) || 0;
+                sticker.wPct = Math.max(3, parseFloat(document.getElementById('stickerW').value) || 10);
+                sticker.hPct = Math.max(3, parseFloat(document.getElementById('stickerH').value) || 10);
+            }
+            updateStickerPositions();
+            syncEmbeddedState();
+        }
+
+        function updateStickerTarget() {
+            if (!selectedSticker) return;
+            const sticker = stickers.find(s => s.id === selectedSticker);
+            if (!sticker) return;
+            sticker.target = document.getElementById('stickerTarget').value;
+            updateStickerPositions();
+            renderStickerList();
+            syncEmbeddedState();
+        }
+
+        function deleteSticker(id) {
+            if (confirm('آیا مطمئن هستید؟')) {
+                stickers = stickers.filter(s => s.id !== id);
+                const div = document.getElementById(`sticker-${id}`);
+                if (div) div.remove();
+                if (selectedSticker === id) { selectedSticker = null; document.getElementById('stickerEditPanel').classList.add('hidden'); }
+                renderStickerList();
+                syncEmbeddedState();
+            }
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const text = document.getElementById('editModeText');
+            if (editMode) {
+                document.getElementById('registration').classList.remove('hidden');
+                document.getElementById('quiz').classList.remove('hidden');
+                document.getElementById('result').classList.remove('hidden');
+                document.querySelectorAll('.sticker-element').forEach(el => el.classList.add('edit-mode'));
+                const logoWrapper = document.getElementById('footerLogoWrapper');
+                if (logoWrapper) logoWrapper.classList.add('edit-mode');
+                text.textContent = 'غیرفعال‌سازی حالت ویرایش';
+                updateStickerPositions();
+                renderFooterElement();
+            } else {
+                document.getElementById('quiz').classList.add('hidden');
+                document.getElementById('result').classList.add('hidden');
+                document.getElementById('registration').classList.remove('hidden');
+                document.querySelectorAll('.sticker-element').forEach(el => el.classList.remove('edit-mode'));
+                const logoWrapper = document.getElementById('footerLogoWrapper');
+                if (logoWrapper) logoWrapper.classList.remove('edit-mode');
+                text.textContent = 'فعال‌سازی حالت ویرایش';
+                selectedSticker = null;
+                document.getElementById('stickerEditPanel').classList.add('hidden');
+                renderStickerList();
+                renderFooterElement();
+                updateStickerPositions();
+            }
+        }
+
+        document.addEventListener('mousedown', function(e) {
+            const footerLogoWrapper = document.getElementById('footerLogoWrapper');
+            if (editMode && footerLogoWrapper && footerLogoWrapper.contains(e.target) && footerLogoWrapper.classList.contains('edit-mode')) {
+                e.preventDefault();
+                e.stopPropagation();
+                footerLogoDragging = true;
+                footerLogoDragStart = { mouseX: e.clientX, mouseY: e.clientY, xPct: footerLogoPos.xPct, yPct: footerLogoPos.yPct };
+                return;
+            }
+            const footerElemDiv = document.getElementById('footerElementDiv');
+            if (editMode && footerElemDiv && footerElemDiv.contains(e.target)) {
+                e.preventDefault();
+                e.stopPropagation();
+                footerElemDragging = true;
+                footerElemDragStart = { mouseX: e.clientX, mouseY: e.clientY, xPct: footerElement.xPct, yPct: footerElement.yPct };
+                return;
+            }
+            if (!editMode) return;
+            const stickerEl = e.target.closest('.sticker-element');
+            if (!stickerEl) return;
+            const id = parseInt(stickerEl.id.split('-')[1]);
+            const sticker = stickers.find(s => s.id === id);
+            if (!sticker) return;
+            const section = document.getElementById(sticker.target);
+            if (!section) return;
+            const isDesk = isDesktopView();
+            if (isDesk && stickerEditModeDevice !== 'desktop') switchDevice('desktop');
+            if (!isDesk && stickerEditModeDevice !== 'mobile') switchDevice('mobile');
+            if (e.target.classList.contains('sticker-handle')) {
+                e.preventDefault();
+                e.stopPropagation();
+                resizingSticker = sticker;
+                resizeCorner = e.target.dataset.corner;
+                resizeStart = { mouseX: e.clientX, mouseY: e.clientY, xPct: isDesk ? sticker.xPctD : sticker.xPct, yPct: isDesk ? sticker.yPctD : sticker.yPct, wPct: isDesk ? sticker.wPctD : sticker.wPct, hPct: isDesk ? sticker.hPctD : sticker.hPct, isDesk: isDesk };
+            } else {
+                e.preventDefault();
+                e.stopPropagation();
+                draggedSticker = sticker;
+                dragStart = { mouseX: e.clientX, mouseY: e.clientY, xPct: isDesk ? sticker.xPctD : sticker.xPct, yPct: isDesk ? sticker.yPctD : sticker.yPct, isDesk: isDesk };
+            }
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (footerLogoDragging && footerLogoDragStart) {
+                const footer = document.getElementById('siteFooter');
+                if (!footer) return;
+                const rect = footer.getBoundingClientRect();
+                footerLogoPos.xPct = footerLogoDragStart.xPct + (e.clientX - footerLogoDragStart.mouseX) / rect.width * 100;
+                footerLogoPos.yPct = footerLogoDragStart.yPct + (e.clientY - footerLogoDragStart.mouseY) / rect.height * 100;
+                updateFooterLogoPosition();
+                return;
+            }
+            if (footerElemDragging && footerElemDragStart && footerElement) {
+                const container = document.getElementById('footerElementContainer');
+                if (!container) return;
+                const rect = container.getBoundingClientRect();
+                footerElement.xPct = footerElemDragStart.xPct + (e.clientX - footerElemDragStart.mouseX) / rect.width * 100;
+                footerElement.yPct = footerElemDragStart.yPct + (e.clientY - footerElemDragStart.mouseY) / rect.height * 100;
+                renderFooterElement();
+                renderFooterElementPanel();
+                return;
+            }
+            if (draggedSticker && dragStart) {
+                const section = document.getElementById(draggedSticker.target);
+                if (!section) return;
+                const rect = section.getBoundingClientRect();
+                const dxPct = (e.clientX - dragStart.mouseX) / rect.width * 100;
+                const dyPct = (e.clientY - dragStart.mouseY) / rect.height * 100;
+                if (dragStart.isDesk) { draggedSticker.xPctD = dragStart.xPct + dxPct; draggedSticker.yPctD = dragStart.yPct + dyPct; draggedSticker.useDesktop = true; }
+                else { draggedSticker.xPct = dragStart.xPct + dxPct; draggedSticker.yPct = dragStart.yPct + dyPct; }
+                updateStickerPositions();
+                if (selectedSticker === draggedSticker.id) syncStickerInputs(draggedSticker);
+            }
+            if (resizingSticker && resizeStart) {
+                const section = document.getElementById(resizingSticker.target);
+                if (!section) return;
+                const rect = section.getBoundingClientRect();
+                const dxPct = (e.clientX - resizeStart.mouseX) / rect.width * 100;
+                const dyPct = (e.clientY - resizeStart.mouseY) / rect.height * 100;
+                const S = resizingSticker; const D = resizeStart.isDesk;
+                if (resizeCorner.includes('e')) { if (D) S.wPctD = Math.max(3, resizeStart.wPct + dxPct); else S.wPct = Math.max(3, resizeStart.wPct + dxPct); }
+                if (resizeCorner.includes('w')) { if (D) { S.wPctD = Math.max(3, resizeStart.wPct - dxPct); S.xPctD = resizeStart.xPct + dxPct; } else { S.wPct = Math.max(3, resizeStart.wPct - dxPct); S.xPct = resizeStart.xPct + dxPct; } }
+                if (resizeCorner.includes('s')) { if (D) S.hPctD = Math.max(3, resizeStart.hPct + dyPct); else S.hPct = Math.max(3, resizeStart.hPct + dyPct); }
+                if (resizeCorner.includes('n')) { if (D) { S.hPctD = Math.max(3, resizeStart.hPct - dyPct); S.yPctD = resizeStart.yPct + dyPct; } else { S.hPct = Math.max(3, resizeStart.hPct - dyPct); S.yPct = resizeStart.yPct + dyPct; } }
+                if (D) S.useDesktop = true;
+                updateStickerPositions();
+                if (selectedSticker === resizingSticker.id) syncStickerInputs(resizingSticker);
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (footerLogoDragging) { syncEmbeddedState(); footerLogoDragging = false; footerLogoDragStart = null; return; }
+            if (footerElemDragging) { syncEmbeddedState(); footerElemDragging = false; footerElemDragStart = null; return; }
+            if (draggedSticker || resizingSticker) syncEmbeddedState();
+            draggedSticker = null; dragStart = null; resizingSticker = null; resizeStart = null;
+        });
+
+        document.addEventListener('touchstart', function(e) {
+            if (!editMode) return;
+            const touch = e.touches[0];
+            const footerLogoWrapper = document.getElementById('footerLogoWrapper');
+            const logoElem = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (footerLogoWrapper && footerLogoWrapper.contains(logoElem) && footerLogoWrapper.classList.contains('edit-mode')) {
+                e.preventDefault();
+                footerLogoDragging = true;
+                footerLogoDragStart = { mouseX: touch.clientX, mouseY: touch.clientY, xPct: footerLogoPos.xPct, yPct: footerLogoPos.yPct };
+                return;
+            }
+            const footerElemDiv = document.getElementById('footerElementDiv');
+            if (footerElemDiv && footerElemDiv.contains(logoElem)) {
+                e.preventDefault();
+                footerElemDragging = true;
+                footerElemDragStart = { mouseX: touch.clientX, mouseY: touch.clientY, xPct: footerElement.xPct, yPct: footerElement.yPct };
+                return;
+            }
+            const stickerEl = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sticker-element');
+            if (!stickerEl) return;
+            const id = parseInt(stickerEl.id.split('-')[1]);
+            const sticker = stickers.find(s => s.id === id);
+            if (!sticker) return;
+            const handle = document.elementFromPoint(touch.clientX, touch.clientY);
+            const isDesk = isDesktopView();
+            if (isDesk && stickerEditModeDevice !== 'desktop') switchDevice('desktop');
+            if (!isDesk && stickerEditModeDevice !== 'mobile') switchDevice('mobile');
+            if (handle && handle.classList.contains('sticker-handle')) {
+                e.preventDefault();
+                resizingSticker = sticker;
+                resizeCorner = handle.dataset.corner;
+                resizeStart = { mouseX: touch.clientX, mouseY: touch.clientY, xPct: isDesk ? sticker.xPctD : sticker.xPct, yPct: isDesk ? sticker.yPctD : sticker.yPct, wPct: isDesk ? sticker.wPctD : sticker.wPct, hPct: isDesk ? sticker.hPctD : sticker.hPct, isDesk: isDesk };
+            } else {
+                e.preventDefault();
+                draggedSticker = sticker;
+                dragStart = { mouseX: touch.clientX, mouseY: touch.clientY, xPct: isDesk ? sticker.xPctD : sticker.xPct, yPct: isDesk ? sticker.yPctD : sticker.yPct, isDesk: isDesk };
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', function(e) {
+            if (!editMode) return;
+            const touch = e.touches[0];
+            if (footerLogoDragging && footerLogoDragStart) {
+                e.preventDefault();
+                const footer = document.getElementById('siteFooter');
+                if (!footer) return;
+                const rect = footer.getBoundingClientRect();
+                footerLogoPos.xPct = footerLogoDragStart.xPct + (touch.clientX - footerLogoDragStart.mouseX) / rect.width * 100;
+                footerLogoPos.yPct = footerLogoDragStart.yPct + (touch.clientY - footerLogoDragStart.mouseY) / rect.height * 100;
+                updateFooterLogoPosition();
+                return;
+            }
+            if (footerElemDragging && footerElemDragStart && footerElement) {
+                e.preventDefault();
+                const container = document.getElementById('footerElementContainer');
+                if (!container) return;
+                const rect = container.getBoundingClientRect();
+                footerElement.xPct = footerElemDragStart.xPct + (touch.clientX - footerElemDragStart.mouseX) / rect.width * 100;
+                footerElement.yPct = footerElemDragStart.yPct + (touch.clientY - footerElemDragStart.mouseY) / rect.height * 100;
+                renderFooterElement();
+                renderFooterElementPanel();
+                return;
+            }
+            if (draggedSticker && dragStart) {
+                e.preventDefault();
+                const section = document.getElementById(draggedSticker.target);
+                if (!section) return;
+                const rect = section.getBoundingClientRect();
+                const dxPct = (touch.clientX - dragStart.mouseX) / rect.width * 100;
+                const dyPct = (touch.clientY - dragStart.mouseY) / rect.height * 100;
+                if (dragStart.isDesk) { draggedSticker.xPctD = dragStart.xPct + dxPct; draggedSticker.yPctD = dragStart.yPct + dyPct; draggedSticker.useDesktop = true; }
+                else { draggedSticker.xPct = dragStart.xPct + dxPct; draggedSticker.yPct = dragStart.yPct + dyPct; }
+                updateStickerPositions();
+                if (selectedSticker === draggedSticker.id) syncStickerInputs(draggedSticker);
+            }
+            if (resizingSticker && resizeStart) {
+                e.preventDefault();
+                const section = document.getElementById(resizingSticker.target);
+                if (!section) return;
+                const rect = section.getBoundingClientRect();
+                const dxPct = (touch.clientX - resizeStart.mouseX) / rect.width * 100;
+                const dyPct = (touch.clientY - resizeStart.mouseY) / rect.height * 100;
+                const S = resizingSticker; const D = resizeStart.isDesk;
+                if (resizeCorner.includes('e')) { if (D) S.wPctD = Math.max(3, resizeStart.wPct + dxPct); else S.wPct = Math.max(3, resizeStart.wPct + dxPct); }
+                if (resizeCorner.includes('w')) { if (D) { S.wPctD = Math.max(3, resizeStart.wPct - dxPct); S.xPctD = resizeStart.xPct + dxPct; } else { S.wPct = Math.max(3, resizeStart.wPct - dxPct); S.xPct = resizeStart.xPct + dxPct; } }
+                if (resizeCorner.includes('s')) { if (D) S.hPctD = Math.max(3, resizeStart.hPct + dyPct); else S.hPct = Math.max(3, resizeStart.hPct + dyPct); }
+                if (resizeCorner.includes('n')) { if (D) { S.hPctD = Math.max(3, resizeStart.hPct - dyPct); S.yPctD = resizeStart.yPct + dyPct; } else { S.hPct = Math.max(3, resizeStart.hPct - dyPct); S.yPct = resizeStart.yPct + dyPct; } }
+                if (D) S.useDesktop = true;
+                updateStickerPositions();
+                if (selectedSticker === resizingSticker.id) syncStickerInputs(resizingSticker);
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', function() {
+            if (footerLogoDragging) { syncEmbeddedState(); footerLogoDragging = false; footerLogoDragStart = null; return; }
+            if (footerElemDragging) { syncEmbeddedState(); footerElemDragging = false; footerElemDragStart = null; return; }
+            if (draggedSticker || resizingSticker) syncEmbeddedState();
+            draggedSticker = null; dragStart = null; resizingSticker = null; resizeStart = null;
+        });
+
+        window.addEventListener('scroll', updateStickerPositions);
+        window.addEventListener('resize', () => { updateStickerPositions(); updateFooterLogoPosition(); });
+
+        function getCurrentState() {
+            return {
+                version: 16,
+                title: document.getElementById('siteTitle').textContent,
+                subtitle: document.getElementById('siteSubtitle').textContent,
+                headerImageMobile: headerImageMobile,
+                headerImageDesktop: headerImageDesktop,
+                footerLogo: footerLogo,
+                footerLogoHeight: footerLogoHeight,
+                footerLogoPos: footerLogoPos,
+                footerElement: footerElement,
+                headerHeightDesktop: headerHeightDesktop,
+                particles: particlesSettings,
+                stickers: stickers
+            };
+        }
+
+        function syncEmbeddedState() {
+            let el = document.getElementById('embeddedState');
+            if (!el) { el = document.createElement('script'); el.id = 'embeddedState'; el.type = 'application/json'; document.body.appendChild(el); }
+            el.textContent = JSON.stringify(getCurrentState()).replace(/</g, '\\u003c');
+        }
+
+        function applyState(state) {
+            if (!state) return;
+            if (state.title) document.getElementById('siteTitle').textContent = state.title;
+            if (state.subtitle) document.getElementById('siteSubtitle').textContent = state.subtitle;
+            if (state.headerImageMobile !== undefined) headerImageMobile = state.headerImageMobile;
+            if (state.headerImageDesktop !== undefined) headerImageDesktop = state.headerImageDesktop;
+            applyHeaderImage();
+            footerLogo = state.footerLogo || '';
+            footerLogoHeight = state.footerLogoHeight || 100;
+            if (state.footerLogoPos) footerLogoPos = { ...footerLogoPos, ...state.footerLogoPos };
+            if (state.footerElement !== undefined) footerElement = state.footerElement;
+            renderFooterLogo();
+            renderFooterElement();
+            renderFooterElementPanel();
+            if (state.headerHeightDesktop !== undefined) {
+                headerHeightDesktop = state.headerHeightDesktop;
+                const hInput = document.getElementById('headerHeightDesktop');
+                const hValue = document.getElementById('headerHeightValue');
+                if (hInput) hInput.value = headerHeightDesktop;
+                if (hValue) hValue.textContent = headerHeightDesktop;
+            }
+            if (Array.isArray(state.stickers) && state.stickers.length > 0) {
+                stickers = state.stickers;
+                stickers.forEach(s => {
+                    if (s.xPctD === undefined) s.xPctD = s.xPct;
+                    if (s.yPctD === undefined) s.yPctD = s.yPct;
+                    if (s.wPctD === undefined) s.wPctD = s.wPct;
+                    if (s.hPctD === undefined) s.hPctD = s.hPct;
+                    if (s.useDesktop === undefined) s.useDesktop = true;
+                    if (s.urlD === undefined) s.urlD = '';
+                    if (s.animation === undefined) s.animation = 'none';
+                    if (s.animSpeed === undefined) s.animSpeed = 3;
+                });
+                renderAllStickers();
+            }
+            try { if (state.particles) applyParticlesSettings(state.particles); } catch (e) {}
+            updateStickerPositions();
+        }
+
+        function loadState() {
+            let state = null;
+            const embedded = document.getElementById('embeddedState');
+            if (embedded && embedded.textContent.trim()) { try { state = JSON.parse(embedded.textContent); } catch (e) { state = null; } }
+            if (state) applyState(state);
+        }
+
+        function exportHTML() {
+            document.getElementById('adminPanel').classList.remove('active');
+            syncEmbeddedState();
+            const clone = document.cloneNode(true);
+            clone.querySelectorAll('.sticker-element').forEach(el => el.remove());
+            const adminPanelClone = clone.querySelector('#adminPanel');
+            if (adminPanelClone) adminPanelClone.classList.remove('active');
+            const adminLogin = clone.querySelector('#adminLogin');
+            const adminContent = clone.querySelector('#adminContent');
+            if (adminLogin) adminLogin.classList.remove('hidden');
+            if (adminContent) adminContent.classList.add('hidden');
+            const logoWrapperClone = clone.querySelector('#footerLogoWrapper');
+            if (logoWrapperClone) logoWrapperClone.classList.remove('edit-mode');
+            const htmlContent = '<!DOCTYPE html>\n' + clone.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'quiz-site-final.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('✅ فایل HTML با تمام تغییرات دانلود شد!');
+        }
+
+        window.onload = function() {
+            loadState();
+            initParticles();
+            document.getElementById('adminPanel').classList.remove('active');
+            updateStickerPositions();
+            updateFooterLogoPosition();
+            setTimeout(updateStickerPositions, 150);
+        };
+    </script>
+<script id="embeddedState" type="application/json">{"version":16,"title":"","subtitle":"","headerImageMobile":"https://uploadkon.ir/uploads/604f25_26هفته-وحدت-مبارک2.jpg","headerImageDesktop":"https://uploadkon.ir/uploads/da5825_26Designing-in-16-by-9-202608251442.jpeg","footerLogo":"","footerLogoHeight":300,"footerLogoPos":{"xPct":50,"yPct":50},"footerElement":{"url":"https://uploadkon.ir/uploads/ac5b25_26Negar-1772332168181.png","xPct":50,"yPct":-151.6,"width":150,"height":150},"headerHeightDesktop":115,"particles":{"enabled":true,"color":"#c9a961","count":80,"speed":1,"size":3,"glow":15,"drift":1,"mode":"snow"},"stickers":[{"id":1787737272546,"url":"https://uploadkon.ir/uploads/ab8126_26پیوند-ها.png","urlD":"","target":"header","xPct":14.97559699850731,"yPct":15.072077352234402,"wPct":66.48925437178063,"hPct":64.2681809486628,"xPctD":29.61073152767523,"yPctD":11.171112500855957,"wPctD":43.07732682077642,"hPctD":52.06471194452415,"useDesktop":true,"animation":"none","animSpeed":3},{"id":1787737359586,"url":"https://uploadkon.ir/uploads/f46c25_26BackgroundEraser-۲۰۲۶۰۲۱۱-۰۳۵۴۳۱۳۴۹.png","urlD":"","target":"header","xPct":32.138662009189936,"yPct":56.66327483917118,"wPct":36.899416445650886,"hPct":57.25442273131938,"xPctD":39.079431907515534,"yPctD":59.69465245746871,"wPctD":23.942661469849163,"hPctD":43.01289260567333,"useDesktop":true,"animation":"pulse","animSpeed":3.5},{"id":1787738587343,"url":"https://uploadkon.ir/uploads/228326_26ویژه-مسابقه-و-هفته-وحدت-و-ولادت-حضرت-محمد-ﷺ-.png","urlD":"","target":"header","xPct":15.146487547705437,"yPct":23.068665175809866,"wPct":66.12304894667523,"hPct":74.1410672761858,"xPctD":29.41346693642857,"yPctD":44.50117607868592,"wPctD":43.2088365482742,"hPctD":23.516091114336263,"useDesktop":true,"animation":"none","animSpeed":3}]}</script></body></html>
